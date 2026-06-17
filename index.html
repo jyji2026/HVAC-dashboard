@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博世 · 空调箱RTY综合看板 · 自动滚动</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif;
+        }
+        body {
+            background: #eef2f7;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .dashboard {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: #f5f8fc;
+            border-radius: 24px;
+            padding: 24px 28px 32px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== 顶部标题 ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #0033a0, #1a5bc7);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header h1 small {
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0.85;
+        }
+        .header .tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header .tags span {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .header .tags span.highlight {
+            background: #ffd966;
+            color: #0033a0;
+        }
+
+        /* ===== 通用卡片 ===== */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px 22px 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border-top: 4px solid #0033a0;
+            transition: transform 0.15s;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .card .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a2a4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .card .card-title .badge {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .badge-red { background: #fce8e6; color: #d93025; }
+        .badge-green { background: #e6f4ea; color: #1e8e3e; }
+        .badge-yellow { background: #fef7e0; color: #f9ab00; }
+        .badge-blue { background: #e8f0fe; color: #0033a0; }
+        .badge-gray { background: #f0f2f5; color: #4a5a72; }
+
+        .chart-container { position: relative; height: 200px; }
+        .chart-container.tall { height: 230px; }
+        .chart-container.short { height: 150px; }
+
+        /* ===== 网格布局 ===== */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 20px; }
+        .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; margin-bottom: 20px; }
+        .full-width { grid-column: 1 / -1; }
+
+        /* ===== KPI 卡片 ===== */
+        .kpi-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .kpi-item {
+            flex: 1;
+            min-width: 80px;
+            background: #f8faff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-align: center;
+            border: 1px solid #e9edf4;
+        }
+        .kpi-item .num {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0b1a2f;
+        }
+        .kpi-item .num.red { color: #d93025; }
+        .kpi-item .num.green { color: #1e8e3e; }
+        .kpi-item .num.yellow { color: #f9ab00; }
+        .kpi-item .num.blue { color: #0033a0; }
+        .kpi-item .label { font-size: 11px; color: #6b7a8f; margin-top: 2px; }
+        .kpi-item .trend { font-size: 12px; font-weight: 600; }
+        .trend-up { color: #d93025; }
+        .trend-down { color: #1e8e3e; }
+        .trend-steady { color: #f9ab00; }
+
+        /* ===== 柏拉图 ===== */
+        .pareto-list { display: flex; flex-direction: column; gap: 5px; }
+        .pareto-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .pareto-row:hover { background: #f0f4fe; }
+        .pareto-row .p-label { width: 70px; font-weight: 500; color: #1a2a4a; flex-shrink: 0; }
+        .pareto-row .p-bar-bg { flex: 1; height: 20px; background: #e9edf4; border-radius: 20px; overflow: hidden; }
+        .pareto-row .p-bar { height: 100%; border-radius: 20px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 11px; font-weight: 600; color: white; }
+        .pareto-row .p-val { width: 50px; text-align: right; font-weight: 600; color: #1a2a4a; flex-shrink: 0; }
+        .pareto-row .p-pct { width: 40px; text-align: right; font-size: 12px; color: #6b7a8f; flex-shrink: 0; }
+
+        /* ===== 改善建议 ===== */
+        .suggestion-item {
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid;
+            font-size: 13px;
+            background: #fafcff;
+        }
+        .suggestion-item .s-title { font-weight: 700; font-size: 14px; }
+        .suggestion-item .s-desc { color: #2a3a5a; margin-top: 2px; }
+        .suggestion-item .s-action { color: #4a5a72; font-size: 12px; margin-top: 3px; }
+        .priority-p0 { border-left-color: #d93025; background: #fef6f5; }
+        .priority-p1 { border-left-color: #f9ab00; background: #fef9ed; }
+        .priority-p2 { border-left-color: #f9ab00; background: #fef9ed; }
+        .priority-p3 { border-left-color: #1e8e3e; background: #ecf7ec; }
+
+        /* ===== 产线卡片特殊边框 ===== */
+        .card-tclient { border-top-color: #0033a0; }
+        .card-w04 { border-top-color: #f9ab00; }
+        .card-d01 { border-top-color: #d93025; }
+
+        /* ===== 底部 ===== */
+        .footer {
+            background: #eaf0fa;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 13px;
+            color: #1f3a6b;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .footer strong { color: #0033a0; }
+
+        /* ===== 图例说明 ===== */
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #4a5a72;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .chart-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chart-legend .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 4px;
+        }
+
+        /* ===== 滚动容器 ===== */
+        .scroll-wrapper {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .scroll-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            animation: scrollUp 45s linear infinite;
+        }
+        .scroll-content:hover {
+            animation-play-state: paused;
+        }
+        /* 每个区块占满视口高度的一部分，保证无缝 */
+        .scroll-section {
+            flex-shrink: 0;
+            width: 100%;
+            padding-bottom: 8px;
+        }
+        /* 关键帧：从0到-100%实现无缝循环，同时复制一份内容 */
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 1100px) {
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .grid-2-1 { grid-template-columns: 1fr; }
+            .grid-1-2 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .header h1 { font-size: 18px; }
+            .dashboard { padding: 12px; }
+            .kpi-item .num { font-size: 22px; }
+            .scroll-content { animation-duration: 60s; } /* 移动端放慢 */
+        }
+        @media (max-width: 480px) {
+            .grid-4 { grid-template-columns: 1fr; }
+            .pareto-row .p-label { width: 55px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+
+    <!-- ===== 顶部标题 ===== -->
+    <div class="header">
+        <h1>🚗 空调箱 RTY 综合看板 <small>博世 · 2026年1-5月</small></h1>
+        <div class="tags">
+            <span>📊 聚焦 T客户 · W04 · D01</span>
+            <span class="highlight">📈 5月RTY 94.2% ▲ 4.5%</span>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 滚动播放区域 (无缝隙) -->
+    <!-- ============================================================ -->
+    <div class="scroll-wrapper">
+        <div class="scroll-content" id="scrollContent">
+            <!-- 第1份内容：所有看板区块 -->
+            <div class="scroll-section" id="section1">
+                <!-- 第一行：KPI 摘要 -->
+                <div class="grid-4">
+                    <div class="card" style="border-top-color:#0033a0;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 5月综合RTY</div>
+                        <div style="font-size:40px;font-weight:700;color:#0033a0;">94.2%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 4.5%</span> 较4月低点反弹</div>
+                    </div>
+                    <div class="card" style="border-top-color:#1e8e3e;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🏆 最佳产线 · T客户</div>
+                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">99.5%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">持续稳定 · 标杆产线</div>
+                    </div>
+                    <div class="card" style="border-top-color:#f9ab00;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔄 波动产线 · W04</div>
+                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">99.0%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 2.5%</span> V型反弹至正常</div>
+                    </div>
+                    <div class="card" style="border-top-color:#d93025;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 重点改善 · D01</div>
+                        <div style="font-size:40px;font-weight:700;color:#d93025;">97.4%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 0.2%</span> 仍为最大短板</div>
+                    </div>
+                </div>
+
+                <!-- 第二行：整体趋势 + 工序不良 -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">📈 月度产量与综合RTY <span class="badge badge-blue">次坐标轴</span></div>
+                        <div class="chart-container tall"><canvas id="chart1"></canvas></div>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 产量 (左轴)</span>
+                            <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 综合RTY (右轴)</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">📉 各工序不良趋势 (1-5月) <span class="badge badge-red">TOP5</span></div>
+                        <div class="chart-container tall"><canvas id="chart2"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- 第三行：柏拉图 + 改善优先级 -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">🎯 5月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
+                        <div class="pareto-list" id="paretoList"></div>
+                        <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
+                            🔴 <strong>电检+拍照</strong> 占不良总数 <strong>80.4%</strong> — 聚焦关键少数
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">⚡ 改善优先级矩阵 <span class="badge badge-blue">行动指南</span></div>
+                        <div class="suggestion-item priority-p0">
+                            <div class="s-title">🔴 P0 · D01 电检</div>
+                            <div class="s-desc">5月不良 <strong>243件</strong>，RTY 98.08%</div>
+                            <div class="s-action">→ 专项攻关，目标降至100件/月</div>
+                        </div>
+                        <div class="suggestion-item priority-p1">
+                            <div class="s-title">🟠 P1 · W04 电检 / 拍照</div>
+                            <div class="s-desc">4月异常波动，5月已改善</div>
+                            <div class="s-action">→ 固化改善措施，防止复发</div>
+                        </div>
+                        <div class="suggestion-item priority-p2">
+                            <div class="s-title">🟡 P2 · 装配工序</div>
+                            <div class="s-desc">5月不良 <strong>43件</strong>，▲95% vs 前4月均值</div>
+                            <div class="s-action">→ 监控趋势，排查工艺变更影响</div>
+                        </div>
+                        <div class="suggestion-item priority-p3">
+                            <div class="s-title">🟢 持续监控 · 气检 / GP12</div>
+                            <div class="s-desc">气检 ▼26% · GP12 ▼57%</div>
+                            <div class="s-action">→ 改善良好，固化经验并推广</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第四行：三大产线 RTY 对比 -->
+                <div class="grid-2">
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-title">🏭 核心产线 RTY 对比 (1-5月) <span class="badge badge-blue">T客户 · W04 · D01</span></div>
+                        <div class="chart-container tall"><canvas id="chart3"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- 第五行：三大产线独立分析 -->
+                <div class="grid-3">
+                    <div class="card card-tclient">
+                        <div class="card-title">🏆 T客户 <span class="badge badge-green">标杆</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">5月 RTY <strong style="color:#0033a0;font-size:20px;">99.5%</strong></div>
+                        <div class="chart-container short"><canvas id="chart4"></canvas></div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            电检264件 · 气检<strong style="color:#1e8e3e;">0件</strong> · GP12 99.96%
+                        </div>
+                    </div>
+                    <div class="card card-w04">
+                        <div class="card-title">🔄 W04 <span class="badge badge-yellow">波动</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">5月 RTY <strong style="color:#f9ab00;font-size:20px;">99.0%</strong></div>
+                        <div class="chart-container short"><canvas id="chart5"></canvas></div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            电检146件 · 拍照60件 · 4月V型反弹
+                        </div>
+                    </div>
+                    <div class="card card-d01">
+                        <div class="card-title">🔧 D01 <span class="badge badge-red">最大短板</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">5月 RTY <strong style="color:#d93025;font-size:20px;">97.4%</strong></div>
+                        <div class="chart-container short"><canvas id="chart6"></canvas></div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            电检243件 · 气检70件 · 拍照仅7件
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第六行：改善总结 + 月度目标 -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">📋 改善行动总览 <span class="badge badge-blue">按优先级</span></div>
+                        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#f0f4fe;text-align:left;">
+                                    <th style="padding:8px 6px;">优先级</th>
+                                    <th style="padding:8px 6px;">产线</th>
+                                    <th style="padding:8px 6px;">工序</th>
+                                    <th style="padding:8px 6px;">5月不良</th>
+                                    <th style="padding:8px 6px;">目标</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid #e9edf4;">
+                                    <td><span style="color:#d93025;font-weight:700;">P0</span></td>
+                                    <td>D01</td>
+                                    <td>电检</td>
+                                    <td style="color:#d93025;font-weight:600;">243件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">100件</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #e9edf4;">
+                                    <td><span style="color:#f9ab00;font-weight:700;">P1</span></td>
+                                    <td>W04</td>
+                                    <td>电检</td>
+                                    <td style="color:#f9ab00;font-weight:600;">146件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">80件</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #e9edf4;">
+                                    <td><span style="color:#f9ab00;font-weight:700;">P1</span></td>
+                                    <td>W04</td>
+                                    <td>拍照</td>
+                                    <td style="color:#f9ab00;font-weight:600;">60件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">30件</td>
+                                </tr>
+                                <tr>
+                                    <td><span style="color:#f9ab00;font-weight:700;">P2</span></td>
+                                    <td>整体</td>
+                                    <td>装配</td>
+                                    <td style="color:#f9ab00;font-weight:600;">43件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">20件</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🎯 月度里程碑 <span class="badge badge-blue">2026年6-8月</span></div>
+                        <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+                            <div style="display:flex;align-items:center;gap:16px;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #0033a0;">
+                                <div style="font-weight:700;color:#0033a0;min-width:50px;">6月</div>
+                                <div style="flex:1;font-size:14px;">D01电检降至 <strong>180件</strong></div>
+                                <div style="font-weight:700;color:#0033a0;">RTY 94.5%</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:16px;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #f9ab00;">
+                                <div style="font-weight:700;color:#f9ab00;min-width:50px;">7月</div>
+                                <div style="flex:1;font-size:14px;">D01电检降至 <strong>130件</strong></div>
+                                <div style="font-weight:700;color:#f9ab00;">RTY 94.8%</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:16px;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #1e8e3e;">
+                                <div style="font-weight:700;color:#1e8e3e;min-width:50px;">8月</div>
+                                <div style="flex:1;font-size:14px;">D01电检降至 <strong>100件</strong></div>
+                                <div style="font-weight:700;color:#1e8e3e;">RTY 95.0%</div>
+                            </div>
+                            <div style="margin-top:4px;font-size:13px;color:#4a5a72;background:#eaf0fa;padding:10px 14px;border-radius:8px;">
+                                🏆 <strong>标杆复制：</strong>将T客户 (99.5%) 经验推广至W04/D01
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部 -->
+                <div class="footer">
+                    <span>📊 数据基于 2026年1-5月 · 聚焦 T客户 / W04 / D01 · 去除 X01前/后、W02前/后</span>
+                    <span><strong>✅</strong> 5月综合 RTY <strong>94.2%</strong> · 较4月低点 (89.7%) 强劲反弹 <strong style="color:#1e8e3e;">▲ 4.5%</strong></span>
+                </div>
+            </div>
+
+            <!-- 第2份内容：完全克隆，用于无缝循环 -->
+            <div class="scroll-section" id="section2">
+                <!-- 完全复制 section1 的内容 -->
+                <div class="grid-4">
+                    <div class="card" style="border-top-color:#0033a0;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 5月综合RTY</div>
+                        <div style="font-size:40px;font-weight:700;color:#0033a0;">94.2%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 4.5%</span> 较4月低点反弹</div>
+                    </div>
+                    <div class="card" style="border-top-color:#1e8e3e;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🏆 最佳产线 · T客户</div>
+                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">99.5%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">持续稳定 · 标杆产线</div>
+                    </div>
+                    <div class="card" style="border-top-color:#f9ab00;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔄 波动产线 · W04</div>
+                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">99.0%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 2.5%</span> V型反弹至正常</div>
+                    </div>
+                    <div class="card" style="border-top-color:#d93025;">
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 重点改善 · D01</div>
+                        <div style="font-size:40px;font-weight:700;color:#d93025;">97.4%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 0.2%</span> 仍为最大短板</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">📈 月度产量与综合RTY <span class="badge badge-blue">次坐标轴</span></div>
+                        <div class="chart-container tall"><canvas id="chart1_clone"></canvas></div>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 产量 (左轴)</span>
+                            <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 综合RTY (右轴)</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">📉 各工序不良趋势 (1-5月) <span class="badge badge-red">TOP5</span></div>
+                        <div class="chart-container tall"><canvas id="chart2_clone"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">🎯 5月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
+                        <div class="pareto-list" id="paretoList_clone"></div>
+                        <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
+                            🔴 <strong>电检+拍照</strong> 占不良总数 <strong>80.4%</strong> — 聚焦关键少数
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">⚡ 改善优先级矩阵 <span class="badge badge-blue">行动指南</span></div>
+                        <div class="suggestion-item priority-p0">
+                            <div class="s-title">🔴 P0 · D01 电检</div>
+                            <div class="s-desc">5月不良 <strong>243件</strong>，RTY 98.08%</div>
+                            <div class="s-action">→ 专项攻关，目标降至100件/月</div>
+                        </div>
+                        <div class="suggestion-item priority-p1">
+                            <div class="s-title">🟠 P1 · W04 电检 / 拍照</div>
+                            <div class="s-desc">4月异常波动，5月已改善</div>
+                            <div class="s-action">→ 固化改善措施，防止复发</div>
+                        </div>
+                        <div class="suggestion-item priority-p2">
+                            <div class="s-title">🟡 P2 · 装配工序</div>
+                            <div class="s-desc">5月不良 <strong>43件</strong>，▲95% vs 前4月均值</div>
+                            <div class="s-action">→ 监控趋势，排查工艺变更影响</div>
+                        </div>
+                        <div class="suggestion-item priority-p3">
+                            <div class="s-title">🟢 持续监控 · 气检 / GP12</div>
+                            <div class="s-desc">气检 ▼26% · GP12 ▼57%</div>
+                            <div class="s-action">→ 改善良好，固化经验并推广</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-title">🏭 核心产线 RTY 对比 (1-5月) <span class="badge badge-blue">T客户 · W04 · D01</span></div>
+                        <div class="chart-container tall"><canvas id="chart3_clone"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="card card-tclient">
+                        <div class="card-title">🏆 T客户 <span class="badge badge-green">标杆</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">5月 RTY <strong style="color:#0033a0;font-size:20px;">99.5%</strong></div>
+                        <div class="chart-container short"><canvas id="chart4_clone"></canvas></div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            电检264件 · 气检<strong style="color:#1e8e3e;">0件</strong> · GP12 99.96%
+                        </div>
+                    </div>
+                    <div class="card card-w04">
+                        <div class="card-title">🔄 W04 <span class="badge badge-yellow">波动</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">5月 RTY <strong style="color:#f9ab00;font-size:20px;">99.0%</strong></div>
+                        <div class="chart-container short"><canvas id="chart5_clone"></canvas></div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            电检146件 · 拍照60件 · 4月V型反弹
+                        </div>
+                    </div>
+                    <div class="card card-d01">
+                        <div class="card-title">🔧 D01 <span class="badge badge-red">最大短板</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">5月 RTY <strong style="color:#d93025;font-size:20px;">97.4%</strong></div>
+                        <div class="chart-container short"><canvas id="chart6_clone"></canvas></div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            电检243件 · 气检70件 · 拍照仅7件
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">📋 改善行动总览 <span class="badge badge-blue">按优先级</span></div>
+                        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#f0f4fe;text-align:left;">
+                                    <th style="padding:8px 6px;">优先级</th>
+                                    <th style="padding:8px 6px;">产线</th>
+                                    <th style="padding:8px 6px;">工序</th>
+                                    <th style="padding:8px 6px;">5月不良</th>
+                                    <th style="padding:8px 6px;">目标</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid #e9edf4;">
+                                    <td><span style="color:#d93025;font-weight:700;">P0</span></td>
+                                    <td>D01</td>
+                                    <td>电检</td>
+                                    <td style="color:#d93025;font-weight:600;">243件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">100件</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #e9edf4;">
+                                    <td><span style="color:#f9ab00;font-weight:700;">P1</span></td>
+                                    <td>W04</td>
+                                    <td>电检</td>
+                                    <td style="color:#f9ab00;font-weight:600;">146件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">80件</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #e9edf4;">
+                                    <td><span style="color:#f9ab00;font-weight:700;">P1</span></td>
+                                    <td>W04</td>
+                                    <td>拍照</td>
+                                    <td style="color:#f9ab00;font-weight:600;">60件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">30件</td>
+                                </tr>
+                                <tr>
+                                    <td><span style="color:#f9ab00;font-weight:700;">P2</span></td>
+                                    <td>整体</td>
+                                    <td>装配</td>
+                                    <td style="color:#f9ab00;font-weight:600;">43件</td>
+                                    <td style="color:#1e8e3e;font-weight:600;">20件</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🎯 月度里程碑 <span class="badge badge-blue">2026年6-8月</span></div>
+                        <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+                            <div style="display:flex;align-items:center;gap:16px;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #0033a0;">
+                                <div style="font-weight:700;color:#0033a0;min-width:50px;">6月</div>
+                                <div style="flex:1;font-size:14px;">D01电检降至 <strong>180件</strong></div>
+                                <div style="font-weight:700;color:#0033a0;">RTY 94.5%</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:16px;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #f9ab00;">
+                                <div style="font-weight:700;color:#f9ab00;min-width:50px;">7月</div>
+                                <div style="flex:1;font-size:14px;">D01电检降至 <strong>130件</strong></div>
+                                <div style="font-weight:700;color:#f9ab00;">RTY 94.8%</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:16px;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #1e8e3e;">
+                                <div style="font-weight:700;color:#1e8e3e;min-width:50px;">8月</div>
+                                <div style="flex:1;font-size:14px;">D01电检降至 <strong>100件</strong></div>
+                                <div style="font-weight:700;color:#1e8e3e;">RTY 95.0%</div>
+                            </div>
+                            <div style="margin-top:4px;font-size:13px;color:#4a5a72;background:#eaf0fa;padding:10px 14px;border-radius:8px;">
+                                🏆 <strong>标杆复制：</strong>将T客户 (99.5%) 经验推广至W04/D01
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <span>📊 数据基于 2026年1-5月 · 聚焦 T客户 / W04 / D01 · 去除 X01前/后、W02前/后</span>
+                    <span><strong>✅</strong> 5月综合 RTY <strong>94.2%</strong> · 较4月低点 (89.7%) 强劲反弹 <strong style="color:#1e8e3e;">▲ 4.5%</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- dashboard 结束 -->
+
+<script>
+    // ============================================================
+    // 1. Chart.js 图表 (同时绘制原始和克隆canvas)
+    // ============================================================
+    const months = ['1月', '2月', '3月', '4月', '5月'];
+
+    function createCharts(suffix = '') {
+        // chart1
+        new Chart(document.getElementById('chart1' + suffix), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: '产量 (台)',
+                        data: [56782, 41484, 77984, 68651, 63986],
+                        backgroundColor: 'rgba(0,51,160,0.65)',
+                        borderRadius: 4,
+                        order: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '综合RTY (%)',
+                        data: [93.3, 94.4, 93.4, 89.7, 94.2],
+                        type: 'line',
+                        borderColor: '#d93025',
+                        backgroundColor: 'rgba(217,48,37,0.08)',
+                        tension: 0.25,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#d93025',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                        fill: true,
+                        order: 1,
+                        borderWidth: 3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, font: { size: 12, weight: '500' }, padding: 16 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                let value = context.parsed.y;
+                                if (context.dataset.label.includes('RTY')) return label + ': ' + value.toFixed(1) + '%';
+                                return label + ': ' + value.toLocaleString() + ' 台';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 }, callback: function(value) { if (value >= 1000) return (value/1000) + 'K'; return value; } }, title: { display: true, text: '产量 (台)', color: '#0033a0', font: { size: 11, weight: '600' } } },
+                    y1: { type: 'linear', position: 'right', min: 85, max: 100, grid: { display: false }, ticks: { font: { size: 11 }, callback: function(value) { return value + '%'; } }, title: { display: true, text: 'RTY (%)', color: '#d93025', font: { size: 11, weight: '600' } } },
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
+
+        // chart2
+        new Chart(document.getElementById('chart2' + suffix), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: '电检', data: [338, 56, 220, 641, 655], borderColor: '#d93025', tension: 0.2, pointRadius: 4, borderWidth: 3 },
+                    { label: '拍照', data: [11, 2, 46, 448, 217], borderColor: '#f9ab00', tension: 0.2, pointRadius: 4, borderWidth: 3 },
+                    { label: '气检', data: [18, 11, 16, 363, 75], borderColor: '#1e8e3e', tension: 0.2, pointRadius: 4, borderWidth: 3 },
+                    { label: '装配', data: [13, 0, 10, 63, 43], borderColor: '#f9ab00', tension: 0.2, pointRadius: 4, borderWidth: 2, borderDash: [5, 5] },
+                    { label: 'GP12', data: [50, 41, 77, 85, 27], borderColor: '#0033a0', tension: 0.2, pointRadius: 4, borderWidth: 2, borderDash: [5, 5] }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } }
+            }
+        });
+
+        // chart3
+        new Chart(document.getElementById('chart3' + suffix), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'T客户', data: [99.4, 99.5, 99.5, 99.3, 99.5], borderColor: '#0033a0', tension: 0.2, pointRadius: 5, borderWidth: 3, fill: false },
+                    { label: 'W04', data: [98.9, 99.3, 98.9, 96.5, 99.0], borderColor: '#f9ab00', tension: 0.2, pointRadius: 5, borderWidth: 3, fill: false },
+                    { label: 'D01', data: [98.2, 99.2, 98.3, 97.2, 97.4], borderColor: '#d93025', tension: 0.2, pointRadius: 5, borderWidth: 3, fill: false }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
+                scales: { y: { min: 95, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } }
+            }
+        });
+
+        // chart4,5,6 小图
+        new Chart(document.getElementById('chart4' + suffix), {
+            type: 'line',
+            data: { labels: months, datasets: [{ label: 'T客户 RTY', data: [99.4, 99.5, 99.5, 99.3, 99.5], borderColor: '#0033a0', tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 98.5, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } } }
+        });
+        new Chart(document.getElementById('chart5' + suffix), {
+            type: 'line',
+            data: { labels: months, datasets: [{ label: 'W04 RTY', data: [98.9, 99.3, 98.9, 96.5, 99.0], borderColor: '#f9ab00', tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 95, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } } }
+        });
+        new Chart(document.getElementById('chart6' + suffix), {
+            type: 'line',
+            data: { labels: months, datasets: [{ label: 'D01 RTY', data: [98.2, 99.2, 98.3, 97.2, 97.4], borderColor: '#d93025', tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 96, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } } }
+        });
+    }
+
+    // 创建原始图表
+    createCharts('');
+    // 创建克隆图表 (id加_clone)
+    createCharts('_clone');
+
+    // ============================================================
+    // 2. 柏拉图渲染 (两个容器)
+    // ============================================================
+    function renderPareto(containerId) {
+        const paretoData = [
+            { label: '电检', value: 655, color: '#d93025' },
+            { label: '拍照', value: 217, color: '#f9ab00' },
+            { label: '气检', value: 75, color: '#f9ab00' },
+            { label: '装配', value: 43, color: '#f9ab00' },
+            { label: 'GP12', value: 27, color: '#1e8e3e' }
+        ];
+        const totalP = paretoData.reduce((s, d) => s + d.value, 0);
+        let cumP = 0;
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        paretoData.forEach((item) => {
+            cumP += item.value;
+            const pct = Math.round((item.value / totalP) * 100);
+            const cumPct = Math.round((cumP / totalP) * 100);
+            const row = document.createElement('div');
+            row.className = 'pareto-row';
+            row.innerHTML = `
+                <span class="p-label">${item.label}</span>
+                <div class="p-bar-bg"><div class="p-bar" style="width:${pct}%;background:${item.color};">${pct}%</div></div>
+                <span class="p-val">${item.value}</span>
+                <span class="p-pct">${cumPct}%</span>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    renderPareto('paretoList');
+    renderPareto('paretoList_clone');
+
+    // ============================================================
+    // 3. 滚动控制 (鼠标悬停暂停)
+    // ============================================================
+    // 已经通过CSS .scroll-content:hover 实现暂停
+    // 无缝滚动通过复制两份内容 + 动画 translateY(-50%) 实现
+    console.log('✅ 博世空调箱RTY看板·自动滚动已启动');
+</script>
+
+</body>
+</html>
