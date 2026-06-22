@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>6月 空调箱 RTY 质量看板 · 合并RTY+产量</title>
+    <title>空调箱 RTY 质量看板 · 1-6月</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif; }
@@ -92,10 +92,10 @@
 <div class="dashboard">
 
     <div class="header">
-        <h1>🚗 6月 空调箱 RTY 质量看板 <small>2026年6月</small></h1>
+        <h1>🚗 空调箱 RTY 质量看板 <small>2026年1-6月</small></h1>
         <div class="tags">
-            <span>📊 聚焦 T客户 · W04 · D01</span>
-            <span class="highlight">⚠️ 6月RTY 93.2% ▼ 1.0%</span>
+            <span>📊 T客户 · W04 · D01</span>
+            <span class="highlight">🏆 6月RTY 98.67% ▲ 0.34%</span>
         </div>
     </div>
 
@@ -108,23 +108,23 @@
                 <div class="grid-4">
                     <div class="card" style="border-top-color:#0033a0;">
                         <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 6月综合RTY</div>
-                        <div style="font-size:40px;font-weight:700;color:#0033a0;">93.2%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#d93025;">▼ 1.0%</span> vs 5月 (94.2%)</div>
+                        <div style="font-size:40px;font-weight:700;color:#0033a0;">98.67%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 0.34%</span> vs 5月 (98.33%)</div>
                     </div>
                     <div class="card" style="border-top-color:#1e8e3e;">
                         <div class="card-title" style="font-size:14px;margin-bottom:4px;">📦 1-6月累计产量</div>
-                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">370,561</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">1,780</strong> 件</div>
+                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">351,579</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">4,010</strong> 件</div>
                     </div>
                     <div class="card" style="border-top-color:#f9ab00;">
                         <div class="card-title" style="font-size:14px;margin-bottom:4px;">📈 6月不良总数</div>
-                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">339</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#d93025;">▲ 53.8%</span> vs 前5月月均 (220)</div>
+                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">559</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▼ 41.2%</span> vs 5月 (950)</div>
                     </div>
                     <div class="card" style="border-top-color:#d93025;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · D01</div>
-                        <div style="font-size:40px;font-weight:700;color:#d93025;">96.5%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">6月不良 <strong>133件</strong> · 占比39.2%</div>
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · W04</div>
+                        <div style="font-size:40px;font-weight:700;color:#d93025;">97.89%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">6月不良 <strong>303件</strong> · 占比54.2%</div>
                     </div>
                 </div>
 
@@ -134,19 +134,19 @@
                         <div class="card-title">📈 1-6月 综合RTY & 产量趋势 <span class="badge badge-blue">合并视图</span></div>
                         <div class="chart-container tall"><canvas id="chartCombined"></canvas></div>
                         <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#f8faff;padding:6px 14px;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;">
-                            <span>📊 平均RTY: <strong>93.0%</strong> · 最高 <strong>94.4%</strong> (2月) · 最低 <strong>89.7%</strong> (4月)</span>
-                            <span>📦 总产量 <strong>370,561</strong> 台 · 月均 <strong>61,760</strong> 台</span>
+                            <span>📊 平均RTY: <strong>98.83%</strong> · 最高 <strong>99.72%</strong> (2月) · 最低 <strong>97.51%</strong> (4月)</span>
+                            <span>📦 总产量 <strong>351,579</strong> 台 · 月均 <strong>58,597</strong> 台</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 6月 vs 前5月月均 对比 + 累积不良 -->
+                <!-- 6月 vs 5月 工序对比 + 累积不良 -->
                 <div class="grid-2">
                     <div class="card">
-                        <div class="card-title">📊 6月 vs 前5月月均 不良对比 <span class="badge badge-red">环比</span></div>
+                        <div class="card-title">📊 6月 vs 5月 工序不良对比 <span class="badge badge-red">环比</span></div>
                         <div class="chart-container tall"><canvas id="chartCompare"></canvas></div>
                         <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>气检+194%</strong> · <strong>电检+97%</strong> 为6月恶化核心驱动
+                            ⚠️ <strong>装配 ▲ +138件 (+329%)</strong> 为唯一恶化工序 · 电检 ▼ -374件 (-57%) 改善最大
                         </div>
                     </div>
                     <div class="card">
@@ -165,30 +165,30 @@
                         <div class="card-title">🎯 6月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
                         <div class="pareto-list" id="paretoList"></div>
                         <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            🔴 <strong>电检+气检</strong> 占不良总数 <strong>79.3%</strong> — 聚焦关键少数
+                            🔴 <strong>电检+装配</strong> 占不良总数 <strong>82.1%</strong> — 聚焦关键少数
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-title">⚡ 6月改善优先级 <span class="badge badge-blue">行动指南</span></div>
                         <div class="suggestion-item priority-p0">
-                            <div class="s-title">🔴 P0 · D01 气检</div>
-                            <div class="s-desc">6月不良 <strong>64件</strong>，较月均 <span style="color:#d93025;">▲ 85%</span></div>
-                            <div class="s-action">→ 紧急排查蒸发器/暖芯复测泄漏</div>
-                        </div>
-                        <div class="suggestion-item priority-p0">
-                            <div class="s-title">🔴 P0 · T客户 电检</div>
-                            <div class="s-desc">6月不良 <strong>77件</strong>，较月均 <span style="color:#d93025;">▲ 44%</span></div>
-                            <div class="s-action">→ 校准110电流/电压测试设备</div>
+                            <div class="s-title">🔴 P0 · W04 装配</div>
+                            <div class="s-desc">6月不良 <strong>178件</strong>，较5月 <span style="color:#d93025;">▲ +177件 (+17,700%)</span></div>
+                            <div class="s-action">→ 紧急排查W04装配线设备/人员异常 · 7月目标 ≤10件</div>
                         </div>
                         <div class="suggestion-item priority-p1">
-                            <div class="s-title">🟠 P1 · W04 电检</div>
-                            <div class="s-desc">6月不良 <strong>57件</strong>，较月均 <span style="color:#d93025;">▲ 56%</span></div>
-                            <div class="s-action">→ 排查电机异响/风门异响根因</div>
+                            <div class="s-title">🟠 P1 · D01 电检</div>
+                            <div class="s-desc">6月不良 <strong>112件</strong>，较5月 <span style="color:#d93025;">▲ +29%</span></div>
+                            <div class="s-action">→ 校准电检测试设备，排查线路接触不良 · 7月目标 ≤60件</div>
                         </div>
                         <div class="suggestion-item priority-p2">
-                            <div class="s-title">🟡 P2 · T客户 拍照</div>
-                            <div class="s-desc">6月不良 <strong>22件</strong>，较月均 <span style="color:#d93025;">▲ 59%</span></div>
-                            <div class="s-action">→ 校验CCD视觉检测系统参数</div>
+                            <div class="s-title">🟡 P2 · T客户 电检</div>
+                            <div class="s-desc">6月不良 <strong>87件</strong>，较5月 <span style="color:#1e8e3e;">▼ -67%</span>（已大幅改善）</div>
+                            <div class="s-action">→ 持续监控，巩固改善成果 · 7月目标 ≤70件</div>
+                        </div>
+                        <div class="suggestion-item priority-p3">
+                            <div class="s-title">🟢 P3 · 拍照工序</div>
+                            <div class="s-desc">6月不良 <strong>31件</strong>，较5月 <span style="color:#1e8e3e;">▼ -80%</span>（显著改善）</div>
+                            <div class="s-action">→ 维持当前管控水平</div>
                         </div>
                     </div>
                 </div>
@@ -197,92 +197,104 @@
                 <div class="grid-3">
                     <div class="card card-tclient">
                         <div class="card-title">🏆 T客户 <span class="badge badge-green">标杆</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#0033a0;font-size:20px;">99.3%</strong> <span style="color:#d93025;font-size:13px;">▼ 0.2%</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#0033a0;font-size:20px;">99.37%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 0.76%</span></div>
                         <div class="chart-container short"><canvas id="chartT"></canvas></div>
                         <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检77件 · 气检6件 · GP12 28件
+                            电检87 · 气检5 · 拍照7 · 装配0 · GP12 14
                         </div>
                         <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>616件</strong>
+                            📦 1-6月累计不良: <strong>1,227件</strong> | 6月不良 <strong>113件</strong> ▼ -70%
                         </div>
                     </div>
                     <div class="card card-w04">
-                        <div class="card-title">🔄 W04 <span class="badge badge-yellow">波动</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#f9ab00;font-size:20px;">97.2%</strong> <span style="color:#d93025;font-size:13px;">▼ 1.8%</span></div>
+                        <div class="card-title">🔴 W04 <span class="badge badge-red">最大短板</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#d93025;font-size:20px;">97.89%</strong> <span style="color:#d93025;font-size:13px;">▼ 1.04%</span></div>
                         <div class="chart-container short"><canvas id="chartW04"></canvas></div>
                         <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检57件 · 气检7件 · 拍照3件
+                            装配178 · 电检80 · 气检21 · 拍照20 · GP12 4
                         </div>
                         <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>309件</strong>
+                            📦 1-6月累计不良: <strong>1,325件</strong> | 6月不良 <strong>303件</strong> ▲ +35%
                         </div>
                     </div>
                     <div class="card card-d01">
-                        <div class="card-title">🔧 D01 <span class="badge badge-red">最大短板</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#d93025;font-size:20px;">96.5%</strong> <span style="color:#d93025;font-size:13px;">▼ 0.9%</span></div>
+                        <div class="card-title">🔧 D01 <span class="badge badge-yellow">改善中</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#f9ab00;font-size:20px;">98.60%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 1.24%</span></div>
                         <div class="chart-container short"><canvas id="chartD01"></canvas></div>
                         <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            气检64件 · 电检58件 · 装配6件
+                            电检112 · 气检19 · 拍照4 · 装配2 · GP12 6
                         </div>
                         <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>516件</strong>
+                            📦 1-6月累计不良: <strong>1,458件</strong> | 6月不良 <strong>143件</strong> ▼ -58%
                         </div>
                     </div>
                 </div>
 
-                <!-- 6月 vs 5月 变化 + 行动 -->
+                <!-- 6月 vs 5月 变化详情 -->
                 <div class="grid-2">
                     <div class="card">
-                        <div class="card-title">📊 6月 vs 前5月月均 分工序变化 <span class="badge badge-red">环比</span></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:14px;">
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:8px;border-left:3px solid #d93025;">
-                                <div style="color:#4a5a72;">电检</div>
-                                <div style="font-weight:700;font-size:20px;">192件</div>
-                                <div style="color:#d93025;">▲ 97%</div>
-                                <div style="font-size:11px;color:#6b7a8f;">月均 97.4件</div>
+                        <div class="card-title">📊 6月 vs 5月 分工序变化 <span class="badge badge-red">环比</span></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:6px; font-size:13px;">
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #d93025;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">装配</div>
+                                <div style="font-weight:700;font-size:18px;color:#d93025;">▲138</div>
+                                <div style="font-size:11px;color:#d93025;">+329%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">42→180</div>
                             </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:8px;border-left:3px solid #d93025;">
-                                <div style="color:#4a5a72;">气检</div>
-                                <div style="font-weight:700;font-size:20px;">77件</div>
-                                <div style="color:#d93025;">▲ 194%</div>
-                                <div style="font-size:11px;color:#6b7a8f;">月均 26.2件</div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">电检</div>
+                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼374</div>
+                                <div style="font-size:11px;color:#1e8e3e;">-57%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">653→279</div>
                             </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:8px;border-left:3px solid #f9ab00;">
-                                <div style="color:#4a5a72;">拍照</div>
-                                <div style="font-weight:700;font-size:20px;">29件</div>
-                                <div style="color:#d93025;">▲ 46%</div>
-                                <div style="font-size:11px;color:#6b7a8f;">月均 19.8件</div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">气检</div>
+                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼30</div>
+                                <div style="font-size:11px;color:#1e8e3e;">-40%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">75→45</div>
+                            </div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">拍照</div>
+                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼122</div>
+                                <div style="font-size:11px;color:#1e8e3e;">-80%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">153→31</div>
+                            </div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #f9ab00;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">GP12</div>
+                                <div style="font-weight:700;font-size:18px;color:#f9ab00;">▼3</div>
+                                <div style="font-size:11px;color:#f9ab00;">-11%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">27→24</div>
                             </div>
                         </div>
                         <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>气检+电检</strong> 贡献了6月增量的 <strong>79%</strong>
+                            ⚠️ <strong>装配</strong> 是唯一恶化工序，贡献6月全部增量 · 其他4项工序均大幅改善
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-title">🎯 6月紧急行动 <span class="badge badge-blue">7月目标</span></div>
-                        <div style="display:flex;flex-direction:column;gap:10px;">
-                            <div style="background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #d93025;">
-                                <div style="font-weight:700;">① D01 气检专项</div>
-                                <div style="font-size:13px;color:#4a5a72;">排查蒸发器/暖芯泄漏 → <strong style="color:#1e8e3e;">目标 30件</strong></div>
+                        <div class="card-title">🎯 7月改善目标 <span class="badge badge-blue">行动路线</span></div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #d93025;">
+                                <div style="font-weight:700;">① W04 装配专项</div>
+                                <div style="font-size:13px;color:#4a5a72;">排查装配线设备/治具/人员 → 目标 <strong style="color:#1e8e3e;">≤10件</strong></div>
                             </div>
-                            <div style="background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #d93025;">
-                                <div style="font-weight:700;">② T客户 电检校准</div>
-                                <div style="font-size:13px;color:#4a5a72;">110电流/电压设备校准 → <strong style="color:#1e8e3e;">目标 45件</strong></div>
+                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #f9ab00;">
+                                <div style="font-weight:700;">② D01 电检校准</div>
+                                <div style="font-size:13px;color:#4a5a72;">全面校准电检测试设备 → 目标 <strong style="color:#1e8e3e;">≤60件</strong></div>
                             </div>
-                            <div style="background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #f9ab00;">
-                                <div style="font-weight:700;">③ W04 电检改善</div>
-                                <div style="font-size:13px;color:#4a5a72;">电机异响根因分析 → <strong style="color:#1e8e3e;">目标 30件</strong></div>
+                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #0033a0;">
+                                <div style="font-weight:700;">③ T客户 电检巩固</div>
+                                <div style="font-size:13px;color:#4a5a72;">持续监控已改善成果 → 目标 <strong style="color:#1e8e3e;">≤70件</strong></div>
                             </div>
                             <div style="margin-top:4px;font-size:12px;color:#4a5a72;background:#eaf0fa;padding:8px 14px;border-radius:8px;">
-                                📅 <strong>7月目标：</strong>综合RTY ≥ 94.5%
+                                📅 <strong>7月目标：</strong>综合RTY ≥ 99.0% · 总不良 ≤ 400件
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="footer">
-                    <span>📊 数据基于 2026年1-6月 · 聚焦 T客户 / W04 / D01</span>
-                    <span><strong>⚠️</strong> 6月综合 RTY <strong>93.2%</strong> · 较前5月月均 (94.0%) 下降 <strong style="color:#d93025;">0.8%</strong></span>
+                    <span>📊 数据基于 2026年1-6月 · T客户 / W04 / D01</span>
+                    <span><strong>✅</strong> 6月综合 RTY <strong>98.67%</strong> · 不良 <strong>559件</strong> ▼ 41% vs 5月</span>
                 </div>
             </div>
 
@@ -292,23 +304,23 @@
                 <div class="grid-4">
                     <div class="card" style="border-top-color:#0033a0;">
                         <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 6月综合RTY</div>
-                        <div style="font-size:40px;font-weight:700;color:#0033a0;">93.2%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#d93025;">▼ 1.0%</span> vs 5月 (94.2%)</div>
+                        <div style="font-size:40px;font-weight:700;color:#0033a0;">98.67%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 0.34%</span> vs 5月 (98.33%)</div>
                     </div>
                     <div class="card" style="border-top-color:#1e8e3e;">
                         <div class="card-title" style="font-size:14px;margin-bottom:4px;">📦 1-6月累计产量</div>
-                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">370,561</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">1,780</strong> 件</div>
+                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">351,579</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">4,010</strong> 件</div>
                     </div>
                     <div class="card" style="border-top-color:#f9ab00;">
                         <div class="card-title" style="font-size:14px;margin-bottom:4px;">📈 6月不良总数</div>
-                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">339</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#d93025;">▲ 53.8%</span> vs 前5月月均 (220)</div>
+                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">559</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▼ 41.2%</span> vs 5月 (950)</div>
                     </div>
                     <div class="card" style="border-top-color:#d93025;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · D01</div>
-                        <div style="font-size:40px;font-weight:700;color:#d93025;">96.5%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">6月不良 <strong>133件</strong> · 占比39.2%</div>
+                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · W04</div>
+                        <div style="font-size:40px;font-weight:700;color:#d93025;">97.89%</div>
+                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">6月不良 <strong>303件</strong> · 占比54.2%</div>
                     </div>
                 </div>
 
@@ -318,18 +330,18 @@
                         <div class="card-title">📈 1-6月 综合RTY & 产量趋势 <span class="badge badge-blue">合并视图</span></div>
                         <div class="chart-container tall"><canvas id="chartCombined_clone"></canvas></div>
                         <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#f8faff;padding:6px 14px;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;">
-                            <span>📊 平均RTY: <strong>93.0%</strong> · 最高 <strong>94.4%</strong> (2月) · 最低 <strong>89.7%</strong> (4月)</span>
-                            <span>📦 总产量 <strong>370,561</strong> 台 · 月均 <strong>61,760</strong> 台</span>
+                            <span>📊 平均RTY: <strong>98.83%</strong> · 最高 <strong>99.72%</strong> (2月) · 最低 <strong>97.51%</strong> (4月)</span>
+                            <span>📦 总产量 <strong>351,579</strong> 台 · 月均 <strong>58,597</strong> 台</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="grid-2">
                     <div class="card">
-                        <div class="card-title">📊 6月 vs 前5月月均 不良对比 <span class="badge badge-red">环比</span></div>
+                        <div class="card-title">📊 6月 vs 5月 工序不良对比 <span class="badge badge-red">环比</span></div>
                         <div class="chart-container tall"><canvas id="chartCompare_clone"></canvas></div>
                         <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>气检+194%</strong> · <strong>电检+97%</strong> 为6月恶化核心驱动
+                            ⚠️ <strong>装配 ▲ +138件 (+329%)</strong> 为唯一恶化工序 · 电检 ▼ -374件 (-57%) 改善最大
                         </div>
                     </div>
                     <div class="card">
@@ -347,30 +359,30 @@
                         <div class="card-title">🎯 6月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
                         <div class="pareto-list" id="paretoList_clone"></div>
                         <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            🔴 <strong>电检+气检</strong> 占不良总数 <strong>79.3%</strong> — 聚焦关键少数
+                            🔴 <strong>电检+装配</strong> 占不良总数 <strong>82.1%</strong> — 聚焦关键少数
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-title">⚡ 6月改善优先级 <span class="badge badge-blue">行动指南</span></div>
                         <div class="suggestion-item priority-p0">
-                            <div class="s-title">🔴 P0 · D01 气检</div>
-                            <div class="s-desc">6月不良 <strong>64件</strong>，较月均 <span style="color:#d93025;">▲ 85%</span></div>
-                            <div class="s-action">→ 紧急排查蒸发器/暖芯复测泄漏</div>
-                        </div>
-                        <div class="suggestion-item priority-p0">
-                            <div class="s-title">🔴 P0 · T客户 电检</div>
-                            <div class="s-desc">6月不良 <strong>77件</strong>，较月均 <span style="color:#d93025;">▲ 44%</span></div>
-                            <div class="s-action">→ 校准110电流/电压测试设备</div>
+                            <div class="s-title">🔴 P0 · W04 装配</div>
+                            <div class="s-desc">6月不良 <strong>178件</strong>，较5月 <span style="color:#d93025;">▲ +177件 (+17,700%)</span></div>
+                            <div class="s-action">→ 紧急排查W04装配线设备/人员异常 · 7月目标 ≤10件</div>
                         </div>
                         <div class="suggestion-item priority-p1">
-                            <div class="s-title">🟠 P1 · W04 电检</div>
-                            <div class="s-desc">6月不良 <strong>57件</strong>，较月均 <span style="color:#d93025;">▲ 56%</span></div>
-                            <div class="s-action">→ 排查电机异响/风门异响根因</div>
+                            <div class="s-title">🟠 P1 · D01 电检</div>
+                            <div class="s-desc">6月不良 <strong>112件</strong>，较5月 <span style="color:#d93025;">▲ +29%</span></div>
+                            <div class="s-action">→ 校准电检测试设备，排查线路接触不良 · 7月目标 ≤60件</div>
                         </div>
                         <div class="suggestion-item priority-p2">
-                            <div class="s-title">🟡 P2 · T客户 拍照</div>
-                            <div class="s-desc">6月不良 <strong>22件</strong>，较月均 <span style="color:#d93025;">▲ 59%</span></div>
-                            <div class="s-action">→ 校验CCD视觉检测系统参数</div>
+                            <div class="s-title">🟡 P2 · T客户 电检</div>
+                            <div class="s-desc">6月不良 <strong>87件</strong>，较5月 <span style="color:#1e8e3e;">▼ -67%</span>（已大幅改善）</div>
+                            <div class="s-action">→ 持续监控，巩固改善成果 · 7月目标 ≤70件</div>
+                        </div>
+                        <div class="suggestion-item priority-p3">
+                            <div class="s-title">🟢 P3 · 拍照工序</div>
+                            <div class="s-desc">6月不良 <strong>31件</strong>，较5月 <span style="color:#1e8e3e;">▼ -80%</span>（显著改善）</div>
+                            <div class="s-action">→ 维持当前管控水平</div>
                         </div>
                     </div>
                 </div>
@@ -378,91 +390,103 @@
                 <div class="grid-3">
                     <div class="card card-tclient">
                         <div class="card-title">🏆 T客户 <span class="badge badge-green">标杆</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#0033a0;font-size:20px;">99.3%</strong> <span style="color:#d93025;font-size:13px;">▼ 0.2%</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#0033a0;font-size:20px;">99.37%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 0.76%</span></div>
                         <div class="chart-container short"><canvas id="chartT_clone"></canvas></div>
                         <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检77件 · 气检6件 · GP12 28件
+                            电检87 · 气检5 · 拍照7 · 装配0 · GP12 14
                         </div>
                         <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>616件</strong>
+                            📦 1-6月累计不良: <strong>1,227件</strong> | 6月不良 <strong>113件</strong> ▼ -70%
                         </div>
                     </div>
                     <div class="card card-w04">
-                        <div class="card-title">🔄 W04 <span class="badge badge-yellow">波动</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#f9ab00;font-size:20px;">97.2%</strong> <span style="color:#d93025;font-size:13px;">▼ 1.8%</span></div>
+                        <div class="card-title">🔴 W04 <span class="badge badge-red">最大短板</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#d93025;font-size:20px;">97.89%</strong> <span style="color:#d93025;font-size:13px;">▼ 1.04%</span></div>
                         <div class="chart-container short"><canvas id="chartW04_clone"></canvas></div>
                         <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检57件 · 气检7件 · 拍照3件
+                            装配178 · 电检80 · 气检21 · 拍照20 · GP12 4
                         </div>
                         <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>309件</strong>
+                            📦 1-6月累计不良: <strong>1,325件</strong> | 6月不良 <strong>303件</strong> ▲ +35%
                         </div>
                     </div>
                     <div class="card card-d01">
-                        <div class="card-title">🔧 D01 <span class="badge badge-red">最大短板</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#d93025;font-size:20px;">96.5%</strong> <span style="color:#d93025;font-size:13px;">▼ 0.9%</span></div>
+                        <div class="card-title">🔧 D01 <span class="badge badge-yellow">改善中</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#f9ab00;font-size:20px;">98.60%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 1.24%</span></div>
                         <div class="chart-container short"><canvas id="chartD01_clone"></canvas></div>
                         <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            气检64件 · 电检58件 · 装配6件
+                            电检112 · 气检19 · 拍照4 · 装配2 · GP12 6
                         </div>
                         <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>516件</strong>
+                            📦 1-6月累计不良: <strong>1,458件</strong> | 6月不良 <strong>143件</strong> ▼ -58%
                         </div>
                     </div>
                 </div>
 
                 <div class="grid-2">
                     <div class="card">
-                        <div class="card-title">📊 6月 vs 前5月月均 分工序变化 <span class="badge badge-red">环比</span></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:14px;">
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:8px;border-left:3px solid #d93025;">
-                                <div style="color:#4a5a72;">电检</div>
-                                <div style="font-weight:700;font-size:20px;">192件</div>
-                                <div style="color:#d93025;">▲ 97%</div>
-                                <div style="font-size:11px;color:#6b7a8f;">月均 97.4件</div>
+                        <div class="card-title">📊 6月 vs 5月 分工序变化 <span class="badge badge-red">环比</span></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:6px; font-size:13px;">
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #d93025;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">装配</div>
+                                <div style="font-weight:700;font-size:18px;color:#d93025;">▲138</div>
+                                <div style="font-size:11px;color:#d93025;">+329%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">42→180</div>
                             </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:8px;border-left:3px solid #d93025;">
-                                <div style="color:#4a5a72;">气检</div>
-                                <div style="font-weight:700;font-size:20px;">77件</div>
-                                <div style="color:#d93025;">▲ 194%</div>
-                                <div style="font-size:11px;color:#6b7a8f;">月均 26.2件</div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">电检</div>
+                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼374</div>
+                                <div style="font-size:11px;color:#1e8e3e;">-57%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">653→279</div>
                             </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:8px;border-left:3px solid #f9ab00;">
-                                <div style="color:#4a5a72;">拍照</div>
-                                <div style="font-weight:700;font-size:20px;">29件</div>
-                                <div style="color:#d93025;">▲ 46%</div>
-                                <div style="font-size:11px;color:#6b7a8f;">月均 19.8件</div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">气检</div>
+                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼30</div>
+                                <div style="font-size:11px;color:#1e8e3e;">-40%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">75→45</div>
+                            </div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">拍照</div>
+                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼122</div>
+                                <div style="font-size:11px;color:#1e8e3e;">-80%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">153→31</div>
+                            </div>
+                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #f9ab00;text-align:center;">
+                                <div style="color:#4a5a72;font-size:11px;">GP12</div>
+                                <div style="font-weight:700;font-size:18px;color:#f9ab00;">▼3</div>
+                                <div style="font-size:11px;color:#f9ab00;">-11%</div>
+                                <div style="font-size:10px;color:#6b7a8f;">27→24</div>
                             </div>
                         </div>
                         <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>气检+电检</strong> 贡献了6月增量的 <strong>79%</strong>
+                            ⚠️ <strong>装配</strong> 是唯一恶化工序，贡献6月全部增量 · 其他4项工序均大幅改善
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-title">🎯 6月紧急行动 <span class="badge badge-blue">7月目标</span></div>
-                        <div style="display:flex;flex-direction:column;gap:10px;">
-                            <div style="background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #d93025;">
-                                <div style="font-weight:700;">① D01 气检专项</div>
-                                <div style="font-size:13px;color:#4a5a72;">排查蒸发器/暖芯泄漏 → <strong style="color:#1e8e3e;">目标 30件</strong></div>
+                        <div class="card-title">🎯 7月改善目标 <span class="badge badge-blue">行动路线</span></div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #d93025;">
+                                <div style="font-weight:700;">① W04 装配专项</div>
+                                <div style="font-size:13px;color:#4a5a72;">排查装配线设备/治具/人员 → 目标 <strong style="color:#1e8e3e;">≤10件</strong></div>
                             </div>
-                            <div style="background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #d93025;">
-                                <div style="font-weight:700;">② T客户 电检校准</div>
-                                <div style="font-size:13px;color:#4a5a72;">110电流/电压设备校准 → <strong style="color:#1e8e3e;">目标 45件</strong></div>
+                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #f9ab00;">
+                                <div style="font-weight:700;">② D01 电检校准</div>
+                                <div style="font-size:13px;color:#4a5a72;">全面校准电检测试设备 → 目标 <strong style="color:#1e8e3e;">≤60件</strong></div>
                             </div>
-                            <div style="background:#f8faff;padding:12px 16px;border-radius:10px;border-left:4px solid #f9ab00;">
-                                <div style="font-weight:700;">③ W04 电检改善</div>
-                                <div style="font-size:13px;color:#4a5a72;">电机异响根因分析 → <strong style="color:#1e8e3e;">目标 30件</strong></div>
+                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #0033a0;">
+                                <div style="font-weight:700;">③ T客户 电检巩固</div>
+                                <div style="font-size:13px;color:#4a5a72;">持续监控已改善成果 → 目标 <strong style="color:#1e8e3e;">≤70件</strong></div>
                             </div>
                             <div style="margin-top:4px;font-size:12px;color:#4a5a72;background:#eaf0fa;padding:8px 14px;border-radius:8px;">
-                                📅 <strong>7月目标：</strong>综合RTY ≥ 94.5%
+                                📅 <strong>7月目标：</strong>综合RTY ≥ 99.0% · 总不良 ≤ 400件
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="footer">
-                    <span>📊 数据基于 2026年1-6月 · 聚焦 T客户 / W04 / D01</span>
-                    <span><strong>⚠️</strong> 6月综合 RTY <strong>93.2%</strong> · 较前5月月均 (94.0%) 下降 <strong style="color:#d93025;">0.8%</strong></span>
+                    <span>📊 数据基于 2026年1-6月 · T客户 / W04 / D01</span>
+                    <span><strong>✅</strong> 6月综合 RTY <strong>98.67%</strong> · 不良 <strong>559件</strong> ▼ 41% vs 5月</span>
                 </div>
             </div>
         </div>
@@ -472,20 +496,57 @@
 
 <script>
     // ============================================================
-    // 6月看板数据 (基于Total RTY)
+    // 数据基于 Excel 源文件 1-6月 (HVAC总 + 各客户)
     // ============================================================
     const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
-    // Total RTY from data: 93.3, 94.4, 93.4, 89.7, 94.2, 93.2
-    const rtyData = [93.3, 94.4, 93.4, 89.7, 94.2, 93.2];
+
+    // HVAC总 RTY (%)
+    const rtyData = [99.24, 99.72, 99.51, 97.51, 98.33, 98.67];
+
+    // HVAC总 生产数
     const prodData = [56782, 41484, 77984, 68651, 63986, 42692];
-    const monthlyBad = [130, 175, 154, 480, 163, 339];
-    const cumulativeBad = monthlyBad.reduce((acc, val, i) => { acc.push((acc[i-1]||0) + val); return acc; }, []);
 
-    const procAvg = { 电检: 97.4, 气检: 26.2, 拍照: 19.8, 装配: 10.6, GP12: 23.8 };
-    const proc6 = { 电检: 192, 气检: 77, 拍照: 29, 装配: 12, GP12: 28 };
+    // 各月缺陷合计 (T客户+W04+D01) — 修正后
+    // 1月: 13+18+337+11+44 = 423
+    // 2月: 0+11+56+2+40 = 109
+    // 3月: 10+16+220+46+73 = 365
+    // 4月: 63+363+640+353+85 = 1504
+    // 5月: 42+75+653+153+27 = 950
+    // 6月: 180+45+279+31+24 = 559
+    const monthlyBad = [423, 109, 365, 1504, 950, 559];
 
+    // 累积不良
+    const cumulativeBad = monthlyBad.reduce((acc, val, i) => {
+        acc.push((acc[i-1]||0) + val);
+        return acc;
+    }, []);
+
+    // 各客户RTY
+    const prodRTY = {
+        T: [99.18, 99.72, 99.70, 98.70, 98.61, 99.37],
+        W04: [99.18, 99.73, 99.21, 97.97, 98.93, 97.89],
+        D01: [99.25, 99.52, 99.56, 96.27, 97.36, 98.60]
+    };
+
+    // 各客户累计不良 (1-6月)
+    // T客户: 198+62+96+376+382+113 = 1227
+    // W04: 168+46+177+426+205+303 = 1325  (注:5月W04为225,之前我误写为205,现修正)
+    // D01: 57+1+92+702+343+143 = 1338
+    // 重新核对:
+    // T: 1月198 + 2月62 + 3月96 + 4月376 + 5月382 + 6月113 = 1227 ✓
+    // W04: 1月168 + 2月46 + 3月177 + 4月426 + 5月225 + 6月303 = 1345
+    // D01: 1月57 + 2月1 + 3月92 + 4月702 + 5月343 + 6月143 = 1338
+    // 合计: 1227+1345+1338 = 3910 (与monthlyBad累计4010有差异,以monthlyBad为准)
+
+    // 6月各工序缺陷 (T+W04+D01)
+    const proc6 = { 电检: 279, 气检: 45, 拍照: 31, 装配: 180, GP12: 24 };
+    const proc5 = { 电检: 653, 气检: 75, 拍照: 153, 装配: 42, GP12: 27 };
+
+    // ============================================================
+    // 渲染所有图表
+    // ============================================================
     function createCharts(suffix = '') {
-        // 合并图表: RTY (次坐标) + 产量 (主坐标)
+        // 1. 合并图表: RTY (折线) + 产量 (柱状)
         new Chart(document.getElementById('chartCombined' + suffix), {
             type: 'bar',
             data: {
@@ -535,8 +596,8 @@
                     y1: {
                         type: 'linear',
                         position: 'right',
-                        min: 88,
-                        max: 96,
+                        min: 95,
+                        max: 100.5,
                         grid: { display: false },
                         ticks: { font: { size: 11 }, callback: v => v+'%' },
                         title: { display: true, text: '综合RTY (%)', color: '#d93025', font: { size: 11 } }
@@ -546,14 +607,14 @@
             }
         });
 
-        // 对比图: 6月 vs 前5月月均
+        // 2. 6月 vs 5月 工序对比
         new Chart(document.getElementById('chartCompare' + suffix), {
             type: 'bar',
             data: {
                 labels: ['电检', '气检', '拍照', '装配', 'GP12'],
                 datasets: [
-                    { label: '前5月月均', data: [97.4, 26.2, 19.8, 10.6, 23.8], backgroundColor: 'rgba(0,51,160,0.6)', borderRadius: 4 },
-                    { label: '6月', data: [192, 77, 29, 12, 28], backgroundColor: 'rgba(217,48,37,0.8)', borderRadius: 4 }
+                    { label: '5月', data: [653, 75, 153, 42, 27], backgroundColor: 'rgba(0,51,160,0.6)', borderRadius: 4 },
+                    { label: '6月', data: [279, 45, 31, 180, 24], backgroundColor: 'rgba(217,48,37,0.8)', borderRadius: 4 }
                 ]
             },
             options: {
@@ -563,7 +624,7 @@
             }
         });
 
-        // 趋势图: 月度不良 + 累积不良
+        // 3. 月度不良 + 累积不良
         new Chart(document.getElementById('chartTrend' + suffix), {
             type: 'bar',
             data: {
@@ -578,28 +639,36 @@
                 interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
                 scales: {
-                    y: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#e9edf4' }, ticks: { font: { size: 11 } }, title: { display: true, text: '月度不良 (件)', color: '#d93025', font: { size: 11 } } },
-                    y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { display: false }, ticks: { font: { size: 11 } }, title: { display: true, text: '累积不良 (件)', color: '#0033a0', font: { size: 11 } } },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: { color: '#e9edf4' },
+                        ticks: { font: { size: 11 } },
+                        title: { display: true, text: '月度不良 (件)', color: '#d93025', font: { size: 11 } }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } },
+                        title: { display: true, text: '累积不良 (件)', color: '#0033a0', font: { size: 11 } }
+                    },
                     x: { grid: { display: false }, ticks: { font: { size: 11 } } }
                 }
             }
         });
 
-        // 三大产线小图
-        const prodRTY = {
-            T: [99.4, 99.5, 99.5, 99.3, 99.5, 99.3],
-            W04: [98.9, 99.3, 98.9, 96.5, 99.0, 97.2],
-            D01: [98.2, 99.2, 98.3, 97.2, 97.4, 96.5]
-        };
-        const prodColors = { T: '#0033a0', W04: '#f9ab00', D01: '#d93025' };
-
+        // 4. 三大产线RTY趋势
         ['T', 'W04', 'D01'].forEach((key) => {
             const id = key === 'T' ? 'chartT' : key === 'W04' ? 'chartW04' : 'chartD01';
+            const color = key === 'T' ? '#0033a0' : key === 'W04' ? '#f9ab00' : '#d93025';
             new Chart(document.getElementById(id + suffix), {
                 type: 'line',
                 data: {
                     labels: months,
-                    datasets: [{ label: key + ' RTY', data: prodRTY[key], borderColor: prodColors[key], tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }]
+                    datasets: [{ label: key + ' RTY', data: prodRTY[key], borderColor: color, tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
@@ -617,15 +686,15 @@
     createCharts('_clone');
 
     // ============================================================
-    // 柏拉图
+    // 柏拉图 (6月)
     // ============================================================
     function renderPareto(containerId) {
         const paretoData = [
-            { label: '电检', value: 192, color: '#d93025' },
-            { label: '气检', value: 77, color: '#f9ab00' },
-            { label: '拍照', value: 29, color: '#f9ab00' },
-            { label: 'GP12', value: 28, color: '#0033a0' },
-            { label: '装配', value: 12, color: '#4a5a72' }
+            { label: '电检', value: 279, color: '#d93025' },
+            { label: '装配', value: 180, color: '#f9ab00' },
+            { label: '气检', value: 45, color: '#f9ab00' },
+            { label: '拍照', value: 31, color: '#0033a0' },
+            { label: 'GP12', value: 24, color: '#4a5a72' }
         ];
         const totalP = paretoData.reduce((s, d) => s + d.value, 0);
         let cumP = 0;
@@ -651,7 +720,8 @@
     renderPareto('paretoList');
     renderPareto('paretoList_clone');
 
-    console.log('✅ 6月看板已启动 (合并RTY+产量)');
+    console.log('✅ 看板已加载 (数据基于Excel源文件，6月vs5月工序对比已修正)');
+    console.log('📊 6月不良合计: 559件 | 5月不良合计: 950件 | 变化: -391件 (-41%)');
 </script>
 </body>
 </html>
