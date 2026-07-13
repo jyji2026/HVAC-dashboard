@@ -3,650 +3,792 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空调箱 RTY 质量看板 · 1-6月</title>
+    <title>空调箱 RTY 质量看板 · 1-7月（6月 vs 7月对比）</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif; }
-        body { background: #eef2f7; padding: 20px; overflow-x: hidden; }
-        .dashboard { max-width: 1440px; margin: 0 auto; background: #f5f8fc; border-radius: 24px; padding: 24px 28px 32px; box-shadow: 0 8px 40px rgba(0,0,0,0.08); }
-
-        .header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0033a0, #1a5bc7); color: white; padding: 16px 32px; border-radius: 16px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
-        .header h1 { font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px; }
-        .header h1 small { font-size: 15px; font-weight: 400; opacity: 0.85; }
-        .header .tags { display: flex; gap: 10px; flex-wrap: wrap; }
-        .header .tags span { background: rgba(255,255,255,0.15); padding: 5px 16px; border-radius: 30px; font-size: 13px; font-weight: 500; }
-        .header .tags span.highlight { background: #ffd966; color: #0033a0; }
-
-        .card { background: white; border-radius: 14px; padding: 18px 22px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border-top: 4px solid #0033a0; transition: transform 0.15s; }
-        .card:hover { transform: translateY(-2px); }
-        .card .card-title { font-size: 16px; font-weight: 600; color: #1a2a4a; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .card .card-title .badge { font-size: 11px; padding: 2px 12px; border-radius: 20px; font-weight: 500; }
-        .badge-red { background: #fce8e6; color: #d93025; }
-        .badge-green { background: #e6f4ea; color: #1e8e3e; }
-        .badge-yellow { background: #fef7e0; color: #f9ab00; }
-        .badge-blue { background: #e8f0fe; color: #0033a0; }
-        .badge-gray { background: #f0f2f5; color: #4a5a72; }
-        .badge-purple { background: #f3e8ff; color: #7c3aed; }
-
-        .chart-container { position: relative; height: 220px; }
-        .chart-container.tall { height: 250px; }
-        .chart-container.short { height: 150px; }
-        .chart-container.medium { height: 190px; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 20px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .full-width { grid-column: 1 / -1; }
-
-        .kpi-item { flex: 1; min-width: 80px; background: #f8faff; border-radius: 10px; padding: 10px 14px; text-align: center; border: 1px solid #e9edf4; }
-        .kpi-item .num { font-size: 28px; font-weight: 700; color: #0b1a2f; }
-        .kpi-item .num.red { color: #d93025; }
-        .kpi-item .num.green { color: #1e8e3e; }
-        .kpi-item .num.yellow { color: #f9ab00; }
-        .kpi-item .num.blue { color: #0033a0; }
-        .kpi-item .label { font-size: 11px; color: #6b7a8f; margin-top: 2px; }
-
-        .pareto-list { display: flex; flex-direction: column; gap: 5px; }
-        .pareto-row { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: 6px; font-size: 13px; }
-        .pareto-row:hover { background: #f0f4fe; }
-        .pareto-row .p-label { width: 70px; font-weight: 500; color: #1a2a4a; flex-shrink: 0; }
-        .pareto-row .p-bar-bg { flex: 1; height: 20px; background: #e9edf4; border-radius: 20px; overflow: hidden; }
-        .pareto-row .p-bar { height: 100%; border-radius: 20px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 11px; font-weight: 600; color: white; }
-        .pareto-row .p-val { width: 50px; text-align: right; font-weight: 600; color: #1a2a4a; flex-shrink: 0; }
-        .pareto-row .p-pct { width: 40px; text-align: right; font-size: 12px; color: #6b7a8f; flex-shrink: 0; }
-
-        .suggestion-item { padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid; font-size: 13px; background: #fafcff; }
-        .suggestion-item .s-title { font-weight: 700; font-size: 14px; }
-        .suggestion-item .s-desc { color: #2a3a5a; margin-top: 2px; }
-        .suggestion-item .s-action { color: #4a5a72; font-size: 12px; margin-top: 3px; }
-        .priority-p0 { border-left-color: #d93025; background: #fef6f5; }
-        .priority-p1 { border-left-color: #f9ab00; background: #fef9ed; }
-        .priority-p2 { border-left-color: #f9ab00; background: #fef9ed; }
-        .priority-p3 { border-left-color: #1e8e3e; background: #ecf7ec; }
-
-        /* AI建议样式 */
-        .ai-suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .ai-item { background: #f8faff; border-radius: 12px; padding: 14px 16px; border-left: 4px solid #7c3aed; transition: background 0.2s; }
-        .ai-item:hover { background: #f0f4fe; }
-        .ai-item .ai-tag { font-size: 10px; font-weight: 700; color: #7c3aed; background: #ede9fe; padding: 2px 10px; border-radius: 20px; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; }
-        .ai-item .ai-title { font-weight: 700; font-size: 14px; color: #1a2a4a; }
-        .ai-item .ai-desc { font-size: 12px; color: #4a5a72; margin-top: 3px; line-height: 1.5; }
-        .ai-item .ai-impact { font-size: 12px; color: #0033a0; margin-top: 5px; font-weight: 500; }
-        .ai-item .ai-impact span { background: #e8f0fe; padding: 2px 10px; border-radius: 20px; }
-        .ai-item .ai-confidence { display: inline-block; font-size: 11px; color: #6b7a8f; margin-left: 8px; }
-        .ai-icon { font-size: 18px; margin-right: 6px; }
-
-        .card-tclient { border-top-color: #0033a0; }
-        .card-w04 { border-top-color: #f9ab00; }
-        .card-d01 { border-top-color: #d93025; }
-
-        .footer { background: #eaf0fa; border-radius: 12px; padding: 14px 24px; font-size: 13px; color: #1f3a6b; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 8px; }
-        .footer strong { color: #0033a0; }
-
-        .chart-legend { display: flex; gap: 20px; font-size: 12px; color: #4a5a72; margin-top: 6px; flex-wrap: wrap; }
-        .chart-legend .legend-item { display: flex; align-items: center; gap: 6px; }
-        .chart-legend .legend-color { width: 20px; height: 3px; border-radius: 4px; }
-
-        .scroll-wrapper { overflow: hidden; position: relative; width: 100%; }
-        .scroll-content { display: flex; flex-direction: column; animation: scrollUp 75s linear infinite; }
-        .scroll-content:hover { animation-play-state: paused; }
-        .scroll-section { flex-shrink: 0; width: 100%; padding-bottom: 8px; }
-        @keyframes scrollUp {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-50%); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif;
+        }
+        body {
+            background: #eef2f7;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .dashboard {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: #f5f8fc;
+            border-radius: 24px;
+            padding: 24px 28px 32px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
         }
 
-        @media (max-width: 1100px) { .grid-4 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr; } .ai-suggestion-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .grid-3 { grid-template-columns: 1fr; } .grid-4 { grid-template-columns: 1fr 1fr; } .header h1 { font-size: 18px; } .dashboard { padding: 12px; } .kpi-item .num { font-size: 22px; } .ai-suggestion-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 480px) { .grid-4 { grid-template-columns: 1fr; } .pareto-row .p-label { width: 55px; font-size: 12px; } }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #0033a0, #1a5bc7);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header h1 small {
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0.85;
+        }
+        .header .tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header .tags span {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .header .tags span.highlight {
+            background: #ffd966;
+            color: #0033a0;
+        }
+        .header .tags span.highlight2 {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px 22px 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border-top: 4px solid #0033a0;
+            transition: transform 0.15s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a2a4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .card .card-title .badge {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .badge-red {
+            background: #fce8e6;
+            color: #d93025;
+        }
+        .badge-green {
+            background: #e6f4ea;
+            color: #1e8e3e;
+        }
+        .badge-yellow {
+            background: #fef7e0;
+            color: #f9ab00;
+        }
+        .badge-blue {
+            background: #e8f0fe;
+            color: #0033a0;
+        }
+        .badge-gray {
+            background: #f0f2f5;
+            color: #4a5a72;
+        }
+        .badge-purple {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+        .badge-orange {
+            background: #fef3e0;
+            color: #e37400;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 220px;
+        }
+        .chart-container.tall {
+            height: 250px;
+        }
+        .chart-container.short {
+            height: 150px;
+        }
+        .chart-container.medium {
+            height: 190px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .kpi-item {
+            flex: 1;
+            min-width: 80px;
+            background: #f8faff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-align: center;
+            border: 1px solid #e9edf4;
+        }
+        .kpi-item .num {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0b1a2f;
+        }
+        .kpi-item .num.red {
+            color: #d93025;
+        }
+        .kpi-item .num.green {
+            color: #1e8e3e;
+        }
+        .kpi-item .num.yellow {
+            color: #f9ab00;
+        }
+        .kpi-item .num.blue {
+            color: #0033a0;
+        }
+        .kpi-item .label {
+            font-size: 11px;
+            color: #6b7a8f;
+            margin-top: 2px;
+        }
+
+        .pareto-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .pareto-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .pareto-row:hover {
+            background: #f0f4fe;
+        }
+        .pareto-row .p-label {
+            width: 70px;
+            font-weight: 500;
+            color: #1a2a4a;
+            flex-shrink: 0;
+        }
+        .pareto-row .p-bar-bg {
+            flex: 1;
+            height: 20px;
+            background: #e9edf4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .pareto-row .p-bar {
+            height: 100%;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+        .pareto-row .p-val {
+            width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #1a2a4a;
+            flex-shrink: 0;
+        }
+        .pareto-row .p-pct {
+            width: 40px;
+            text-align: right;
+            font-size: 12px;
+            color: #6b7a8f;
+            flex-shrink: 0;
+        }
+
+        .suggestion-item {
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid;
+            font-size: 13px;
+            background: #fafcff;
+        }
+        .suggestion-item .s-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .suggestion-item .s-desc {
+            color: #2a3a5a;
+            margin-top: 2px;
+        }
+        .suggestion-item .s-action {
+            color: #4a5a72;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+        .priority-p0 {
+            border-left-color: #d93025;
+            background: #fef6f5;
+        }
+        .priority-p1 {
+            border-left-color: #f9ab00;
+            background: #fef9ed;
+        }
+        .priority-p2 {
+            border-left-color: #f9ab00;
+            background: #fef9ed;
+        }
+        .priority-p3 {
+            border-left-color: #1e8e3e;
+            background: #ecf7ec;
+        }
+
+        .ai-suggestion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .ai-item {
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            border-left: 4px solid #7c3aed;
+            transition: background 0.2s;
+        }
+        .ai-item:hover {
+            background: #f0f4fe;
+        }
+        .ai-item .ai-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: #7c3aed;
+            background: #ede9fe;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .ai-item .ai-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1a2a4a;
+        }
+        .ai-item .ai-desc {
+            font-size: 12px;
+            color: #4a5a72;
+            margin-top: 3px;
+            line-height: 1.5;
+        }
+        .ai-item .ai-impact {
+            font-size: 12px;
+            color: #0033a0;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        .ai-item .ai-impact span {
+            background: #e8f0fe;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .ai-item .ai-confidence {
+            display: inline-block;
+            font-size: 11px;
+            color: #6b7a8f;
+            margin-left: 8px;
+        }
+
+        .card-tclient {
+            border-top-color: #0033a0;
+        }
+        .card-w04 {
+            border-top-color: #f9ab00;
+        }
+        .card-d01 {
+            border-top-color: #d93025;
+        }
+
+        .footer {
+            background: #eaf0fa;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 13px;
+            color: #1f3a6b;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .footer strong {
+            color: #0033a0;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #4a5a72;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .chart-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chart-legend .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 4px;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+        .compare-card {
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+            border: 1px solid #e9edf4;
+        }
+        .compare-card .big-num {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .compare-card .small-label {
+            font-size: 12px;
+            color: #6b7a8f;
+        }
+        .compare-card .change-badge {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .change-up {
+            color: #d93025;
+            background: #fce8e6;
+        }
+        .change-down {
+            color: #1e8e3e;
+            background: #e6f4ea;
+        }
+        .change-flat {
+            color: #f9ab00;
+            background: #fef7e0;
+        }
+
+        .highlight-box {
+            background: #fef6f5;
+            border-left: 4px solid #d93025;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #2a3a5a;
+        }
+        .highlight-box.green {
+            background: #ecf7ec;
+            border-left-color: #1e8e3e;
+        }
+        .highlight-box.yellow {
+            background: #fef9ed;
+            border-left-color: #f9ab00;
+        }
+
+        @media (max-width: 1100px) {
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .ai-suggestion-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .compare-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+            .dashboard {
+                padding: 12px;
+            }
+            .kpi-item .num {
+                font-size: 22px;
+            }
+            .ai-suggestion-grid {
+                grid-template-columns: 1fr;
+            }
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .pareto-row .p-label {
+                width: 55px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="dashboard">
+    <div class="dashboard">
 
-    <div class="header">
-        <h1>🚗 空调箱 RTY 质量看板 <small>2026年1-6月</small></h1>
-        <div class="tags">
-            <span>📊 T客户 · W04 · D01</span>
-            <span class="highlight">🏆 6月RTY 98.67% ▲ 0.34%</span>
-            <span class="highlight" style="background:#ede9fe;color:#7c3aed;">🤖 AI 4项建议已加载</span>
-        </div>
-    </div>
-
-    <div class="scroll-wrapper">
-        <div class="scroll-content">
-
-            <!-- ========== 第1份 ========== -->
-            <div class="scroll-section">
-                <!-- KPI -->
-                <div class="grid-4">
-                    <div class="card" style="border-top-color:#0033a0;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 6月综合RTY</div>
-                        <div style="font-size:40px;font-weight:700;color:#0033a0;">98.67%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 0.34%</span> vs 5月 (98.33%)</div>
-                    </div>
-                    <div class="card" style="border-top-color:#1e8e3e;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📦 1-6月累计产量</div>
-                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">351,579</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">3,910</strong> 件</div>
-                    </div>
-                    <div class="card" style="border-top-color:#f9ab00;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📈 6月不良总数</div>
-                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">559</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▼ 41.2%</span> vs 5月 (950)</div>
-                    </div>
-                    <div class="card" style="border-top-color:#d93025;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · W04</div>
-                        <div style="font-size:40px;font-weight:700;color:#d93025;">97.89%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">6月不良 <strong>303件</strong> · 占比54.2%</div>
-                    </div>
-                </div>
-
-                <!-- 合并图表：RTY + 产量 -->
-                <div class="grid-2 full-width">
-                    <div class="card full-width">
-                        <div class="card-title">📈 1-6月 综合RTY & 产量趋势 <span class="badge badge-blue">合并视图</span></div>
-                        <div class="chart-container tall"><canvas id="chartCombined"></canvas></div>
-                        <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#f8faff;padding:6px 14px;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;">
-                            <span>📊 平均RTY: <strong>98.83%</strong> · 最高 <strong>99.72%</strong> (2月) · 最低 <strong>97.51%</strong> (4月)</span>
-                            <span>📦 总产量 <strong>351,579</strong> 台 · 月均 <strong>58,597</strong> 台</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 6月 vs 5月 工序对比 + 累积不良 -->
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-title">📊 6月 vs 5月 工序不良对比 <span class="badge badge-red">环比</span></div>
-                        <div class="chart-container tall"><canvas id="chartCompare"></canvas></div>
-                        <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>装配 ▲ +138件 (+329%)</strong> 为唯一恶化工序 · 电检 ▼ -374件 (-57%) 改善最大
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">📈 月度不良趋势 (1-6月) <span class="badge badge-blue">含累积</span></div>
-                        <div class="chart-container tall"><canvas id="chartTrend"></canvas></div>
-                        <div class="chart-legend">
-                            <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 月度不良</span>
-                            <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 累积不良 (右轴)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 柏拉图 + 改善优先级 -->
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-title">🎯 6月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
-                        <div class="pareto-list" id="paretoList"></div>
-                        <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            🔴 <strong>电检+装配</strong> 占不良总数 <strong>82.1%</strong> — 聚焦关键少数
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">⚡ 6月改善优先级 <span class="badge badge-blue">行动指南</span></div>
-                        <div class="suggestion-item priority-p0">
-                            <div class="s-title">🔴 P0 · W04 装配</div>
-                            <div class="s-desc">6月不良 <strong>178件</strong>，较5月 <span style="color:#d93025;">▲ +177件 (+17,700%)</span></div>
-                            <div class="s-action">→ 紧急排查W04装配线设备/人员异常 · 7月目标 ≤10件</div>
-                        </div>
-                        <div class="suggestion-item priority-p1">
-                            <div class="s-title">🟠 P1 · D01 电检</div>
-                            <div class="s-desc">6月不良 <strong>112件</strong>，较5月 <span style="color:#d93025;">▲ +29%</span></div>
-                            <div class="s-action">→ 校准电检测试设备，排查线路接触不良 · 7月目标 ≤60件</div>
-                        </div>
-                        <div class="suggestion-item priority-p2">
-                            <div class="s-title">🟡 P2 · T客户 电检</div>
-                            <div class="s-desc">6月不良 <strong>87件</strong>，较5月 <span style="color:#1e8e3e;">▼ -67%</span>（已大幅改善）</div>
-                            <div class="s-action">→ 持续监控，巩固改善成果 · 7月目标 ≤70件</div>
-                        </div>
-                        <div class="suggestion-item priority-p3">
-                            <div class="s-title">🟢 P3 · 拍照工序</div>
-                            <div class="s-desc">6月不良 <strong>31件</strong>，较5月 <span style="color:#1e8e3e;">▼ -80%</span>（显著改善）</div>
-                            <div class="s-action">→ 维持当前管控水平</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ========== 🤖 AI 4项智能建议 ========== -->
-                <div class="grid-2 full-width">
-                    <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%);">
-                        <div class="card-title">
-                            🤖 AI 智能建议
-                            <span class="badge badge-purple">基于数据自动生成</span>
-                            <span style="font-size:11px;color:#6b7a8f;font-weight:400;margin-left:4px;">· 4项洞察</span>
-                        </div>
-                        <div class="ai-suggestion-grid">
-                            <!-- 建议1: 装配异常溯源 -->
-                            <div class="ai-item" style="border-left-color:#d93025;">
-                                <div class="ai-tag">🔴 高优先级 · 根因分析</div>
-                                <div class="ai-title">① W04装配不良暴增 17,700%</div>
-                                <div class="ai-desc">6月W04装配不良从5月1件飙升至178件，建议对6月1-15日与16-30日分段追溯，锁定设备参数漂移或新员工上岗批次。</div>
-                                <div class="ai-impact"><span>📈 预计改善后 RTY 可回升至 98.8%+</span> <span class="ai-confidence">置信度 92%</span></div>
-                            </div>
-
-                            <!-- 建议2: 电检预测性维护 -->
-                            <div class="ai-item" style="border-left-color:#f9ab00;">
-                                <div class="ai-tag">🟡 中优先级 · 预测性维护</div>
-                                <div class="ai-title">② D01电检不良呈周期性波动</div>
-                                <div class="ai-desc">D01电检不良在3月(17件)→4月(90件)→5月(243件)→6月(112件)，呈"锯齿状"波动，建议建立电检测试设备定期校准预警机制。</div>
-                                <div class="ai-impact"><span>📉 可降低波动幅度 40%</span> <span class="ai-confidence">置信度 78%</span></div>
-                            </div>
-
-                            <!-- 建议3: 排产与良率关联分析 -->
-                            <div class="ai-item" style="border-left-color:#0033a0;">
-                                <div class="ai-tag">🟢 优化建议 · 排产策略</div>
-                                <div class="ai-title">③ 产量高峰(3月)伴随RTY低谷(97.51%)</div>
-                                <div class="ai-desc">3月产量77,984台为全年最高，但RTY仅97.51%（最低点）。建议将W04/D01的高风险订单分散至RTY较高的1-2月或5-6月。</div>
-                                <div class="ai-impact"><span>⚖️ 可提升综合RTY 0.5~0.8%</span> <span class="ai-confidence">置信度 71%</span></div>
-                            </div>
-
-                            <!-- 建议4: 拍照工序AI视觉检测升级 -->
-                            <div class="ai-item" style="border-left-color:#1e8e3e;">
-                                <div class="ai-tag">🟢 长期优化 · 智能化升级</div>
-                                <div class="ai-title">④ 拍照工序不良已大幅改善(-80%)</div>
-                                <div class="ai-desc">拍照不良从5月153件降至6月31件，改善显著。建议导入AI视觉复判系统，将当前人工目检升级为"AI初检+人工复判"模式，进一步压降不良。</div>
-                                <div class="ai-impact"><span>🤖 目标将拍照不良降至 ≤10件/月</span> <span class="ai-confidence">置信度 65%</span></div>
-                            </div>
-                        </div>
-                        <div style="margin-top:12px;font-size:11px;color:#6b7a8f;background:#ede9fe;padding:6px 14px;border-radius:8px;text-align:center;">
-                            ⚡ AI建议基于历史数据趋势、工序波动及产线对比分析生成 · 建议优先执行 P0/P1 项
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 三大产线6月分析 -->
-                <div class="grid-3">
-                    <div class="card card-tclient">
-                        <div class="card-title">🏆 T客户 <span class="badge badge-green">标杆</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#0033a0;font-size:20px;">99.37%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 0.76%</span></div>
-                        <div class="chart-container short"><canvas id="chartT"></canvas></div>
-                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检87 · 气检5 · 拍照7 · 装配0 · GP12 14
-                        </div>
-                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>1,227件</strong> | 6月不良 <strong>113件</strong> ▼ -70%
-                        </div>
-                    </div>
-                    <div class="card card-w04">
-                        <div class="card-title">🔴 W04 <span class="badge badge-red">最大短板</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#d93025;font-size:20px;">97.89%</strong> <span style="color:#d93025;font-size:13px;">▼ 1.04%</span></div>
-                        <div class="chart-container short"><canvas id="chartW04"></canvas></div>
-                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            装配178 · 电检80 · 气检21 · 拍照20 · GP12 4
-                        </div>
-                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>1,345件</strong> | 6月不良 <strong>303件</strong> ▲ +35%
-                        </div>
-                    </div>
-                    <div class="card card-d01">
-                        <div class="card-title">🔧 D01 <span class="badge badge-yellow">改善中</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#f9ab00;font-size:20px;">98.60%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 1.24%</span></div>
-                        <div class="chart-container short"><canvas id="chartD01"></canvas></div>
-                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检112 · 气检19 · 拍照4 · 装配2 · GP12 6
-                        </div>
-                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>1,338件</strong> | 6月不良 <strong>143件</strong> ▼ -58%
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 6月 vs 5月 变化详情 -->
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-title">📊 6月 vs 5月 分工序变化 <span class="badge badge-red">环比</span></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:6px; font-size:13px;">
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #d93025;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">装配</div>
-                                <div style="font-weight:700;font-size:18px;color:#d93025;">▲138</div>
-                                <div style="font-size:11px;color:#d93025;">+329%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">42→180</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">电检</div>
-                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼374</div>
-                                <div style="font-size:11px;color:#1e8e3e;">-57%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">653→279</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">气检</div>
-                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼30</div>
-                                <div style="font-size:11px;color:#1e8e3e;">-40%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">75→45</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">拍照</div>
-                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼122</div>
-                                <div style="font-size:11px;color:#1e8e3e;">-80%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">153→31</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #f9ab00;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">GP12</div>
-                                <div style="font-weight:700;font-size:18px;color:#f9ab00;">▼3</div>
-                                <div style="font-size:11px;color:#f9ab00;">-11%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">27→24</div>
-                            </div>
-                        </div>
-                        <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>装配</strong> 是唯一恶化工序，贡献6月全部增量 · 其他4项工序均大幅改善
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">🎯 7月改善目标 <span class="badge badge-blue">行动路线</span></div>
-                        <div style="display:flex;flex-direction:column;gap:8px;">
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #d93025;">
-                                <div style="font-weight:700;">① W04 装配专项</div>
-                                <div style="font-size:13px;color:#4a5a72;">排查装配线设备/治具/人员 → 目标 <strong style="color:#1e8e3e;">≤10件</strong></div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #f9ab00;">
-                                <div style="font-weight:700;">② D01 电检校准</div>
-                                <div style="font-size:13px;color:#4a5a72;">全面校准电检测试设备 → 目标 <strong style="color:#1e8e3e;">≤60件</strong></div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #0033a0;">
-                                <div style="font-weight:700;">③ T客户 电检巩固</div>
-                                <div style="font-size:13px;color:#4a5a72;">持续监控已改善成果 → 目标 <strong style="color:#1e8e3e;">≤70件</strong></div>
-                            </div>
-                            <div style="margin-top:4px;font-size:12px;color:#4a5a72;background:#eaf0fa;padding:8px 14px;border-radius:8px;">
-                                📅 <strong>7月目标：</strong>综合RTY ≥ 99.0% · 总不良 ≤ 400件
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="footer">
-                    <span>📊 数据基于 2026年1-6月 · T客户 / W04 / D01</span>
-                    <span><strong>✅</strong> 6月综合 RTY <strong>98.67%</strong> · 不良 <strong>559件</strong> ▼ 41% vs 5月</span>
-                </div>
+        <!-- ==================== HEADER ==================== -->
+        <div class="header">
+            <h1>❄️ 空调箱 RTY 质量看板 <small>2026年 1-7月</small></h1>
+            <div class="tags">
+                <span>📊 T客户 · W04 · D01</span>
+                <span class="highlight">📈 7月RTY 99.10% ▲ 0.28%</span>
+                <span class="highlight2">🤖 AI 4项建议已加载</span>
             </div>
+        </div>
 
-            <!-- ========== 第2份 (克隆) ========== -->
-            <div class="scroll-section">
-                <!-- KPI -->
-                <div class="grid-4">
-                    <div class="card" style="border-top-color:#0033a0;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 6月综合RTY</div>
-                        <div style="font-size:40px;font-weight:700;color:#0033a0;">98.67%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▲ 0.34%</span> vs 5月 (98.33%)</div>
-                    </div>
-                    <div class="card" style="border-top-color:#1e8e3e;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📦 1-6月累计产量</div>
-                        <div style="font-size:40px;font-weight:700;color:#1e8e3e;">351,579</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">3,910</strong> 件</div>
-                    </div>
-                    <div class="card" style="border-top-color:#f9ab00;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">📈 6月不良总数</div>
-                        <div style="font-size:40px;font-weight:700;color:#f9ab00;">559</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;"><span style="color:#1e8e3e;">▼ 41.2%</span> vs 5月 (950)</div>
-                    </div>
-                    <div class="card" style="border-top-color:#d93025;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · W04</div>
-                        <div style="font-size:40px;font-weight:700;color:#d93025;">97.89%</div>
-                        <div style="font-size:14px;color:#4a5a72;margin-top:2px;">6月不良 <strong>303件</strong> · 占比54.2%</div>
-                    </div>
+        <!-- ==================== KPI ==================== -->
+        <div class="grid-4" id="kpiCards"></div>
+
+        <!-- ==================== 6月 vs 7月 重点对比 ==================== -->
+        <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%);">
+            <div class="card-title">
+                📊 6月 vs 7月 核心对比
+                <span class="badge badge-purple">重点分析</span>
+                <span style="font-size:12px;color:#6b7a8f;font-weight:400;">⚠️ 7月产量为部分统计（约6月的28%）</span>
+            </div>
+            <div class="compare-grid" id="compareGrid"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px;">
+                <div class="highlight-box">
+                    <strong>✅ 改善亮点：</strong> W04装配不良从178件 → 0件，电检不良全面下降
                 </div>
-
-                <!-- 合并图表：RTY + 产量 -->
-                <div class="grid-2 full-width">
-                    <div class="card full-width">
-                        <div class="card-title">📈 1-6月 综合RTY & 产量趋势 <span class="badge badge-blue">合并视图</span></div>
-                        <div class="chart-container tall"><canvas id="chartCombined_clone"></canvas></div>
-                        <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#f8faff;padding:6px 14px;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;">
-                            <span>📊 平均RTY: <strong>98.83%</strong> · 最高 <strong>99.72%</strong> (2月) · 最低 <strong>97.51%</strong> (4月)</span>
-                            <span>📦 总产量 <strong>351,579</strong> 台 · 月均 <strong>58,597</strong> 台</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-title">📊 6月 vs 5月 工序不良对比 <span class="badge badge-red">环比</span></div>
-                        <div class="chart-container tall"><canvas id="chartCompare_clone"></canvas></div>
-                        <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>装配 ▲ +138件 (+329%)</strong> 为唯一恶化工序 · 电检 ▼ -374件 (-57%) 改善最大
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">📈 月度不良趋势 (1-6月) <span class="badge badge-blue">含累积</span></div>
-                        <div class="chart-container tall"><canvas id="chartTrend_clone"></canvas></div>
-                        <div class="chart-legend">
-                            <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 月度不良</span>
-                            <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 累积不良 (右轴)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-title">🎯 6月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
-                        <div class="pareto-list" id="paretoList_clone"></div>
-                        <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            🔴 <strong>电检+装配</strong> 占不良总数 <strong>82.1%</strong> — 聚焦关键少数
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">⚡ 6月改善优先级 <span class="badge badge-blue">行动指南</span></div>
-                        <div class="suggestion-item priority-p0">
-                            <div class="s-title">🔴 P0 · W04 装配</div>
-                            <div class="s-desc">6月不良 <strong>178件</strong>，较5月 <span style="color:#d93025;">▲ +177件 (+17,700%)</span></div>
-                            <div class="s-action">→ 紧急排查W04装配线设备/人员异常 · 7月目标 ≤10件</div>
-                        </div>
-                        <div class="suggestion-item priority-p1">
-                            <div class="s-title">🟠 P1 · D01 电检</div>
-                            <div class="s-desc">6月不良 <strong>112件</strong>，较5月 <span style="color:#d93025;">▲ +29%</span></div>
-                            <div class="s-action">→ 校准电检测试设备，排查线路接触不良 · 7月目标 ≤60件</div>
-                        </div>
-                        <div class="suggestion-item priority-p2">
-                            <div class="s-title">🟡 P2 · T客户 电检</div>
-                            <div class="s-desc">6月不良 <strong>87件</strong>，较5月 <span style="color:#1e8e3e;">▼ -67%</span>（已大幅改善）</div>
-                            <div class="s-action">→ 持续监控，巩固改善成果 · 7月目标 ≤70件</div>
-                        </div>
-                        <div class="suggestion-item priority-p3">
-                            <div class="s-title">🟢 P3 · 拍照工序</div>
-                            <div class="s-desc">6月不良 <strong>31件</strong>，较5月 <span style="color:#1e8e3e;">▼ -80%</span>（显著改善）</div>
-                            <div class="s-action">→ 维持当前管控水平</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ========== 🤖 AI 4项智能建议 (克隆) ========== -->
-                <div class="grid-2 full-width">
-                    <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%);">
-                        <div class="card-title">
-                            🤖 AI 智能建议
-                            <span class="badge badge-purple">基于数据自动生成</span>
-                            <span style="font-size:11px;color:#6b7a8f;font-weight:400;margin-left:4px;">· 4项洞察</span>
-                        </div>
-                        <div class="ai-suggestion-grid">
-                            <div class="ai-item" style="border-left-color:#d93025;">
-                                <div class="ai-tag">🔴 高优先级 · 根因分析</div>
-                                <div class="ai-title">① W04装配不良暴增 17,700%</div>
-                                <div class="ai-desc">6月W04装配不良从5月1件飙升至178件，建议对6月1-15日与16-30日分段追溯，锁定设备参数漂移或新员工上岗批次。</div>
-                                <div class="ai-impact"><span>📈 预计改善后 RTY 可回升至 98.8%+</span> <span class="ai-confidence">置信度 92%</span></div>
-                            </div>
-                            <div class="ai-item" style="border-left-color:#f9ab00;">
-                                <div class="ai-tag">🟡 中优先级 · 预测性维护</div>
-                                <div class="ai-title">② D01电检不良呈周期性波动</div>
-                                <div class="ai-desc">D01电检不良在3月(17件)→4月(90件)→5月(243件)→6月(112件)，呈"锯齿状"波动，建议建立电检测试设备定期校准预警机制。</div>
-                                <div class="ai-impact"><span>📉 可降低波动幅度 40%</span> <span class="ai-confidence">置信度 78%</span></div>
-                            </div>
-                            <div class="ai-item" style="border-left-color:#0033a0;">
-                                <div class="ai-tag">🟢 优化建议 · 排产策略</div>
-                                <div class="ai-title">③ 产量高峰(3月)伴随RTY低谷(97.51%)</div>
-                                <div class="ai-desc">3月产量77,984台为全年最高，但RTY仅97.51%（最低点）。建议将W04/D01的高风险订单分散至RTY较高的1-2月或5-6月。</div>
-                                <div class="ai-impact"><span>⚖️ 可提升综合RTY 0.5~0.8%</span> <span class="ai-confidence">置信度 71%</span></div>
-                            </div>
-                            <div class="ai-item" style="border-left-color:#1e8e3e;">
-                                <div class="ai-tag">🟢 长期优化 · 智能化升级</div>
-                                <div class="ai-title">④ 拍照工序不良已大幅改善(-80%)</div>
-                                <div class="ai-desc">拍照不良从5月153件降至6月31件，改善显著。建议导入AI视觉复判系统，将当前人工目检升级为"AI初检+人工复判"模式，进一步压降不良。</div>
-                                <div class="ai-impact"><span>🤖 目标将拍照不良降至 ≤10件/月</span> <span class="ai-confidence">置信度 65%</span></div>
-                            </div>
-                        </div>
-                        <div style="margin-top:12px;font-size:11px;color:#6b7a8f;background:#ede9fe;padding:6px 14px;border-radius:8px;text-align:center;">
-                            ⚡ AI建议基于历史数据趋势、工序波动及产线对比分析生成 · 建议优先执行 P0/P1 项
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid-3">
-                    <div class="card card-tclient">
-                        <div class="card-title">🏆 T客户 <span class="badge badge-green">标杆</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#0033a0;font-size:20px;">99.37%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 0.76%</span></div>
-                        <div class="chart-container short"><canvas id="chartT_clone"></canvas></div>
-                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检87 · 气检5 · 拍照7 · 装配0 · GP12 14
-                        </div>
-                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>1,227件</strong> | 6月不良 <strong>113件</strong> ▼ -70%
-                        </div>
-                    </div>
-                    <div class="card card-w04">
-                        <div class="card-title">🔴 W04 <span class="badge badge-red">最大短板</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#d93025;font-size:20px;">97.89%</strong> <span style="color:#d93025;font-size:13px;">▼ 1.04%</span></div>
-                        <div class="chart-container short"><canvas id="chartW04_clone"></canvas></div>
-                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            装配178 · 电检80 · 气检21 · 拍照20 · GP12 4
-                        </div>
-                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>1,345件</strong> | 6月不良 <strong>303件</strong> ▲ +35%
-                        </div>
-                    </div>
-                    <div class="card card-d01">
-                        <div class="card-title">🔧 D01 <span class="badge badge-yellow">改善中</span></div>
-                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">6月 RTY <strong style="color:#f9ab00;font-size:20px;">98.60%</strong> <span style="color:#1e8e3e;font-size:13px;">▲ 1.24%</span></div>
-                        <div class="chart-container short"><canvas id="chartD01_clone"></canvas></div>
-                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
-                            电检112 · 气检19 · 拍照4 · 装配2 · GP12 6
-                        </div>
-                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
-                            📦 1-6月累计不良: <strong>1,338件</strong> | 6月不良 <strong>143件</strong> ▼ -58%
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-title">📊 6月 vs 5月 分工序变化 <span class="badge badge-red">环比</span></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:6px; font-size:13px;">
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #d93025;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">装配</div>
-                                <div style="font-weight:700;font-size:18px;color:#d93025;">▲138</div>
-                                <div style="font-size:11px;color:#d93025;">+329%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">42→180</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">电检</div>
-                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼374</div>
-                                <div style="font-size:11px;color:#1e8e3e;">-57%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">653→279</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">气检</div>
-                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼30</div>
-                                <div style="font-size:11px;color:#1e8e3e;">-40%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">75→45</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #1e8e3e;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">拍照</div>
-                                <div style="font-weight:700;font-size:18px;color:#1e8e3e;">▼122</div>
-                                <div style="font-size:11px;color:#1e8e3e;">-80%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">153→31</div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid #f9ab00;text-align:center;">
-                                <div style="color:#4a5a72;font-size:11px;">GP12</div>
-                                <div style="font-weight:700;font-size:18px;color:#f9ab00;">▼3</div>
-                                <div style="font-size:11px;color:#f9ab00;">-11%</div>
-                                <div style="font-size:10px;color:#6b7a8f;">27→24</div>
-                            </div>
-                        </div>
-                        <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
-                            ⚠️ <strong>装配</strong> 是唯一恶化工序，贡献6月全部增量 · 其他4项工序均大幅改善
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">🎯 7月改善目标 <span class="badge badge-blue">行动路线</span></div>
-                        <div style="display:flex;flex-direction:column;gap:8px;">
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #d93025;">
-                                <div style="font-weight:700;">① W04 装配专项</div>
-                                <div style="font-size:13px;color:#4a5a72;">排查装配线设备/治具/人员 → 目标 <strong style="color:#1e8e3e;">≤10件</strong></div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #f9ab00;">
-                                <div style="font-weight:700;">② D01 电检校准</div>
-                                <div style="font-size:13px;color:#4a5a72;">全面校准电检测试设备 → 目标 <strong style="color:#1e8e3e;">≤60件</strong></div>
-                            </div>
-                            <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #0033a0;">
-                                <div style="font-weight:700;">③ T客户 电检巩固</div>
-                                <div style="font-size:13px;color:#4a5a72;">持续监控已改善成果 → 目标 <strong style="color:#1e8e3e;">≤70件</strong></div>
-                            </div>
-                            <div style="margin-top:4px;font-size:12px;color:#4a5a72;background:#eaf0fa;padding:8px 14px;border-radius:8px;">
-                                📅 <strong>7月目标：</strong>综合RTY ≥ 99.0% · 总不良 ≤ 400件
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="footer">
-                    <span>📊 数据基于 2026年1-6月 · T客户 / W04 / D01</span>
-                    <span><strong>✅</strong> 6月综合 RTY <strong>98.67%</strong> · 不良 <strong>559件</strong> ▼ 41% vs 5月</span>
+                <div class="highlight-box yellow">
+                    <strong>⚠️ 关注风险：</strong> D01装配不良从8件 → 24件（上升200%），需排查
                 </div>
             </div>
         </div>
+
+        <!-- ==================== 图表：综合RTY + 产量 ==================== -->
+        <div class="grid-2 full-width">
+            <div class="card full-width">
+                <div class="card-title">📈 1-7月 综合RTY & 产量趋势 <span class="badge badge-blue">含7月</span></div>
+                <div class="chart-container tall"><canvas id="chartCombined"></canvas></div>
+                <div style="margin-top:6px;font-size:12px;color:#4a5a72;background:#f8faff;padding:6px 14px;border-radius:8px;display:flex;justify-content:space-between;flex-wrap:wrap;" id="chartSummaryStats"></div>
+            </div>
+        </div>
+
+        <!-- ==================== 6月 vs 7月 工序对比 ==================== -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">📊 6月 vs 7月 工序不良对比 <span class="badge badge-red">环比</span></div>
+                <div class="chart-container tall"><canvas id="chartCompare"></canvas></div>
+                <div style="margin-top:6px;font-size:12px;background:#fef6f5;padding:8px 14px;border-radius:8px;" id="compareAnnotation"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">📈 月度不良趋势 (1-7月) <span class="badge badge-blue">含累积</span></div>
+                <div class="chart-container tall"><canvas id="chartTrend"></canvas></div>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 月度不良</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 累积不良 (右轴)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 柏拉图 + 改善优先级 ==================== -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">🎯 7月不良柏拉图 <span class="badge badge-red">80/20分析</span></div>
+                <div class="pareto-list" id="paretoList"></div>
+                <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;" id="paretoAnnotation"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚡ 改善优先级 <span class="badge badge-blue">7月行动指南</span></div>
+                <div id="priorityList"></div>
+            </div>
+        </div>
+
+        <!-- ==================== AI 智能建议 ==================== -->
+        <div class="grid-2 full-width">
+            <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%);">
+                <div class="card-title">
+                    🤖 AI 智能建议
+                    <span class="badge badge-purple">基于6→7月变化自动生成</span>
+                    <span style="font-size:11px;color:#6b7a8f;font-weight:400;margin-left:4px;">· 4项洞察</span>
+                </div>
+                <div class="ai-suggestion-grid" id="aiSuggestions"></div>
+                <div style="margin-top:12px;font-size:11px;color:#6b7a8f;background:#ede9fe;padding:6px 14px;border-radius:8px;text-align:center;">
+                    ⚡ AI建议基于6月→7月工序波动、产线对比及历史趋势生成
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 三大产线7月分析 ==================== -->
+        <div class="grid-3" id="productLines"></div>
+
+        <!-- ==================== 变化详情 ==================== -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">📊 6月 vs 7月 分工序变化 <span class="badge badge-red">环比</span></div>
+                <div id="changeDetailGrid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:6px; font-size:13px;"></div>
+                <div style="margin-top:8px;font-size:12px;color:#4a5a72;background:#fef6f5;padding:8px 14px;border-radius:8px;">
+                    ⚠️ <strong>装配</strong> 是唯一恶化工序（D01），其他4项工序均大幅改善
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🎯 8月改善目标 <span class="badge badge-blue">行动路线</span></div>
+                <div id="targetList"></div>
+            </div>
+        </div>
+
+        <!-- ==================== 页脚 ==================== -->
+        <div class="footer">
+            <span>📊 数据基于 2026年1-7月 · T客户 / W04 / D01</span>
+            <span><strong>✅</strong> 7月综合 RTY <span id="footerRTY">--</span> · 不良 <span id="footerBad">--</span></span>
+        </div>
+
     </div>
 
-</div>
+    <script>
+        // ================================================================
+        // ===== 数据配置区（基于您的Excel 1-7月） =====
+        // ================================================================
 
-<script>
-    // ============================================================
-    // 数据基于 Excel 源文件 1-6月 (HVAC总 + 各客户)
-    // ============================================================
-    const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
+        const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
 
-    // HVAC总 RTY (%)
-    const rtyData = [99.24, 99.72, 99.51, 97.51, 98.33, 98.67];
+        // ----- HVAC总（综合）-----
+        const RTY_DATA = [99.24, 99.72, 99.51, 97.51, 98.33, 98.67, 99.10];
+        const PROD_DATA = [56782, 41484, 77984, 68651, 63986, 62416, 17564];
+        // 月度不良 = 生产数 × (1 - RTY) 取整（基于HVAC总）
+        const MONTHLY_BAD = [432, 114, 378, 1520, 962, 559, 158];
 
-    // HVAC总 生产数 (已修正6月为52859)
-    const prodData = [56782, 41484, 77984, 68651, 63986, 52859];
+        // ----- 各产线RTY -----
+        const LINE_NAMES = ['T客户', 'W04', 'D01'];
+        const LINE_RTY = [
+            [99.18, 99.72, 99.70, 98.70, 98.61, 99.37, 99.18],
+            [99.18, 99.73, 99.21, 97.97, 98.93, 97.89, 99.07],
+            [99.25, 99.52, 99.56, 96.27, 97.36, 98.60, 98.78]
+        ];
+        const LINE_COLORS = ['#0033a0', '#f9ab00', '#d93025'];
 
-    // 各月缺陷合计 (T客户+W04+D01)
-    const monthlyBad = [423, 109, 365, 1504, 950, 559];
+        // ----- 各产线7月不良明细（从Excel各月sheet提取）-----
+        const LINE_BAD_DETAIL = [
+            { 装配: 0, 气检: 0, 电检: 75, 拍照: 0, GP12: 8 }, // T客户 7月
+            { 装配: 0, 气检: 0, 电检: 21, 拍照: 13, GP12: 2 }, // W04 7月
+            { 装配: 24, 气检: 0, 电检: 12, 拍照: 0, GP12: 0 } // D01 7月
+        ];
+        const LINE_CUM_BAD = [1352, 1458, 1413]; // 1-7月累计
+        const LINE_MONTH_BAD = [83, 36, 36]; // 7月各产线不良
+        const LINE_RTY_CHANGE = [-0.19, +1.18, +0.18]; // 7月 vs 6月 变化百分点
 
-    // 累积不良
-    const cumulativeBad = monthlyBad.reduce((acc, val, i) => {
-        acc.push((acc[i-1]||0) + val);
-        return acc;
-    }, []);
+        // ----- 工序数据（7月 vs 6月）-----
+        const PROC_CURRENT = { 电检: 108, 气检: 0, 拍照: 13, 装配: 24, GP12: 10 }; // 7月
+        const PROC_PREV = { 电检: 279, 气检: 45, 拍照: 31, 装配: 180, GP12: 24 }; // 6月
 
-    // 各客户RTY
-    const prodRTY = {
-        T: [99.18, 99.72, 99.70, 98.70, 98.61, 99.37],
-        W04: [99.18, 99.73, 99.21, 97.97, 98.93, 97.89],
-        D01: [99.25, 99.52, 99.56, 96.27, 97.36, 98.60]
-    };
+        // ----- 柏拉图（7月，按值降序）-----
+        const PARETO_DATA = [
+            { label: '电检', value: 108, color: '#d93025' },
+            { label: '装配', value: 24, color: '#f9ab00' },
+            { label: '拍照', value: 13, color: '#0033a0' },
+            { label: 'GP12', value: 10, color: '#4a5a72' },
+            { label: '气检', value: 0, color: '#6b7a8f' }
+        ];
 
-    // 6月各工序缺陷
-    const proc6 = { 电检: 279, 气检: 45, 拍照: 31, 装配: 180, GP12: 24 };
-    const proc5 = { 电检: 653, 气检: 75, 拍照: 153, 装配: 42, GP12: 27 };
+        // ================================================================
+        // 渲染逻辑
+        // ================================================================
 
-    // ============================================================
-    // 渲染所有图表
-    // ============================================================
-    function createCharts(suffix = '') {
-        new Chart(document.getElementById('chartCombined' + suffix), {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [
-                    {
+        const totalMonths = MONTHS.length;
+        const lastIdx = totalMonths - 1;
+        const prevIdx = lastIdx - 1;
+
+        function sum(arr) { return arr.reduce((a, b) => a + b, 0); }
+
+        function avg(arr) { return sum(arr) / arr.length; }
+
+        function max(arr) { return Math.max(...arr); }
+
+        function min(arr) { return Math.min(...arr); }
+
+        function formatPct(v) { return v.toFixed(2) + '%'; }
+
+        function formatNum(v) { return v.toLocaleString(); }
+
+        const CUM_BAD = MONTHLY_BAD.reduce((acc, val, i) => {
+            acc.push((acc[i - 1] || 0) + val);
+            return acc;
+        }, []);
+
+        // ---- KPI ----
+        function renderKPI() {
+            const lastRTY = RTY_DATA[lastIdx];
+            const prevRTY = RTY_DATA[prevIdx];
+            const rtyChange = lastRTY - prevRTY;
+            const totalProd = sum(PROD_DATA);
+            const totalBad = CUM_BAD[lastIdx];
+            const lastBad = MONTHLY_BAD[lastIdx];
+            const prevBad = MONTHLY_BAD[prevIdx];
+            const badChange = lastBad - prevBad;
+            const badChangePct = prevBad !== 0 ? ((badChange / prevBad) * 100) : 0;
+
+            let minLineIdx = 0,
+                minRTY = Infinity;
+            LINE_RTY.forEach((rtyArr, idx) => {
+                const val = rtyArr[lastIdx];
+                if (val < minRTY) { minRTY = val;
+                    minLineIdx = idx; }
+            });
+
+            document.getElementById('kpiCards').innerHTML = `
+                <div class="card" style="border-top-color:#0033a0;">
+                    <div class="card-title" style="font-size:14px;margin-bottom:4px;">📊 7月综合RTY</div>
+                    <div style="font-size:40px;font-weight:700;color:#0033a0;">${formatPct(lastRTY)}</div>
+                    <div style="font-size:14px;color:#4a5a72;margin-top:2px;">
+                        <span style="color:${rtyChange >= 0 ? '#1e8e3e' : '#d93025'};">${rtyChange >= 0 ? '▲' : '▼'} ${Math.abs(rtyChange).toFixed(2)}%</span> 
+                        vs 6月 (${formatPct(prevRTY)})
+                    </div>
+                </div>
+                <div class="card" style="border-top-color:#1e8e3e;">
+                    <div class="card-title" style="font-size:14px;margin-bottom:4px;">📦 1-7月累计产量</div>
+                    <div style="font-size:40px;font-weight:700;color:#1e8e3e;">${formatNum(totalProd)}</div>
+                    <div style="font-size:14px;color:#4a5a72;margin-top:2px;">累计不良 <strong style="color:#d93025;">${formatNum(totalBad)}</strong> 件</div>
+                </div>
+                <div class="card" style="border-top-color:#f9ab00;">
+                    <div class="card-title" style="font-size:14px;margin-bottom:4px;">📈 7月不良总数</div>
+                    <div style="font-size:40px;font-weight:700;color:#f9ab00;">${formatNum(lastBad)}</div>
+                    <div style="font-size:14px;color:#4a5a72;margin-top:2px;">
+                        <span style="color:${badChange <= 0 ? '#1e8e3e' : '#d93025'};">${badChange <= 0 ? '▼' : '▲'} ${Math.abs(badChange)}件 (${badChangePct >= 0 ? '+' : ''}${badChangePct.toFixed(1)}%)</span>
+                        vs 6月 (${formatNum(prevBad)})
+                    </div>
+                </div>
+                <div class="card" style="border-top-color:#d93025;">
+                    <div class="card-title" style="font-size:14px;margin-bottom:4px;">🔧 最大短板 · ${LINE_NAMES[minLineIdx]}</div>
+                    <div style="font-size:40px;font-weight:700;color:#d93025;">${formatPct(minRTY)}</div>
+                    <div style="font-size:14px;color:#4a5a72;margin-top:2px;">7月不良 <strong>${formatNum(LINE_MONTH_BAD[minLineIdx])}</strong> 件</div>
+                </div>
+            `;
+            document.getElementById('footerRTY').textContent = formatPct(lastRTY);
+            document.getElementById('footerBad').textContent = formatNum(lastBad);
+        }
+
+        // ---- 6月 vs 7月 核心对比 ----
+        function renderCompare() {
+            const lastRTY = RTY_DATA[lastIdx];
+            const prevRTY = RTY_DATA[prevIdx];
+            const lastBad = MONTHLY_BAD[lastIdx];
+            const prevBad = MONTHLY_BAD[prevIdx];
+            const lastProd = PROD_DATA[lastIdx];
+            const prevProd = PROD_DATA[prevIdx];
+
+            const rtyChange = (lastRTY - prevRTY);
+            const badChange = lastBad - prevBad;
+            const prodChange = ((lastProd - prevProd) / prevProd * 100);
+
+            const rtyClass = rtyChange >= 0 ? 'change-down' : 'change-up';
+            const badClass = badChange <= 0 ? 'change-down' : 'change-up';
+
+            document.getElementById('compareGrid').innerHTML = `
+                <div class="compare-card">
+                    <div class="small-label">综合RTY</div>
+                    <div class="big-num" style="color:#0033a0;">${formatPct(lastRTY)}</div>
+                    <div class="change-badge ${rtyClass}">${rtyChange >= 0 ? '▲' : '▼'} ${Math.abs(rtyChange).toFixed(2)}%</div>
+                    <div style="font-size:12px;color:#6b7a8f;margin-top:2px;">6月: ${formatPct(prevRTY)}</div>
+                </div>
+                <div class="compare-card">
+                    <div class="small-label">月度不良</div>
+                    <div class="big-num" style="color:#f9ab00;">${formatNum(lastBad)}</div>
+                    <div class="change-badge ${badClass}">${badChange <= 0 ? '▼' : '▲'} ${Math.abs(badChange)}件</div>
+                    <div style="font-size:12px;color:#6b7a8f;margin-top:2px;">6月: ${formatNum(prevBad)}</div>
+                </div>
+                <div class="compare-card">
+                    <div class="small-label">月产量</div>
+                    <div class="big-num" style="color:#1e8e3e;">${formatNum(lastProd)}</div>
+                    <div class="change-badge ${prodChange < -50 ? 'change-up' : 'change-down'}">${prodChange >= 0 ? '▲' : '▼'} ${Math.abs(prodChange).toFixed(1)}%</div>
+                    <div style="font-size:12px;color:#6b7a8f;margin-top:2px;">6月: ${formatNum(prevProd)}</div>
+                </div>
+            `;
+        }
+
+        // ---- 图表 ----
+        function renderCharts() {
+            // 1. 综合RTY + 产量
+            new Chart(document.getElementById('chartCombined'), {
+                type: 'bar',
+                data: {
+                    labels: MONTHS,
+                    datasets: [{
                         label: '产量 (台)',
-                        data: prodData,
+                        data: PROD_DATA,
                         backgroundColor: 'rgba(0,51,160,0.6)',
                         borderRadius: 4,
                         order: 2,
                         yAxisID: 'y'
-                    },
-                    {
+                    }, {
                         label: '综合RTY (%)',
-                        data: rtyData,
+                        data: RTY_DATA,
                         type: 'line',
                         borderColor: '#d93025',
                         backgroundColor: 'rgba(217,48,37,0.08)',
@@ -659,151 +801,340 @@
                         borderWidth: 3,
                         order: 1,
                         yAxisID: 'y1'
-                    }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { position: 'top', labels: { usePointStyle: true, font: { size: 12 } } }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        position: 'left',
-                        beginAtZero: true,
-                        grid: { color: '#e9edf4' },
-                        ticks: { font: { size: 11 }, callback: v => v >= 1000 ? (v/1000)+'K' : v },
-                        title: { display: true, text: '产量 (台)', color: '#0033a0', font: { size: 11 } }
-                    },
-                    y1: {
-                        type: 'linear',
-                        position: 'right',
-                        min: 95,
-                        max: 100.5,
-                        grid: { display: false },
-                        ticks: { font: { size: 11 }, callback: v => v+'%' },
-                        title: { display: true, text: '综合RTY (%)', color: '#d93025', font: { size: 11 } }
-                    },
-                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-                }
-            }
-        });
-
-        new Chart(document.getElementById('chartCompare' + suffix), {
-            type: 'bar',
-            data: {
-                labels: ['电检', '气检', '拍照', '装配', 'GP12'],
-                datasets: [
-                    { label: '5月', data: [653, 75, 153, 42, 27], backgroundColor: 'rgba(0,51,160,0.6)', borderRadius: 4 },
-                    { label: '6月', data: [279, 45, 31, 180, 24], backgroundColor: 'rgba(217,48,37,0.8)', borderRadius: 4 }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
-                scales: { y: { beginAtZero: true, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } }
-            }
-        });
-
-        new Chart(document.getElementById('chartTrend' + suffix), {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [
-                    { label: '月度不良', data: monthlyBad, backgroundColor: 'rgba(217,48,37,0.7)', borderRadius: 4, order: 2, yAxisID: 'y' },
-                    { label: '累积不良', data: cumulativeBad, type: 'line', borderColor: '#0033a0', backgroundColor: 'rgba(0,51,160,0.08)', tension: 0.2, pointRadius: 5, pointBackgroundColor: '#0033a0', pointBorderColor: 'white', pointBorderWidth: 2, fill: true, order: 1, borderWidth: 3, yAxisID: 'y1' }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        position: 'left',
-                        beginAtZero: true,
-                        grid: { color: '#e9edf4' },
-                        ticks: { font: { size: 11 } },
-                        title: { display: true, text: '月度不良 (件)', color: '#d93025', font: { size: 11 } }
-                    },
-                    y1: {
-                        type: 'linear',
-                        position: 'right',
-                        beginAtZero: true,
-                        grid: { display: false },
-                        ticks: { font: { size: 11 } },
-                        title: { display: true, text: '累积不良 (件)', color: '#0033a0', font: { size: 11 } }
-                    },
-                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-                }
-            }
-        });
-
-        ['T', 'W04', 'D01'].forEach((key) => {
-            const id = key === 'T' ? 'chartT' : key === 'W04' ? 'chartW04' : 'chartD01';
-            const color = key === 'T' ? '#0033a0' : key === 'W04' ? '#f9ab00' : '#d93025';
-            new Chart(document.getElementById(id + suffix), {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{ label: key + ' RTY', data: prodRTY[key], borderColor: color, tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }]
+                    }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, font: { size: 12 } } }
+                    },
                     scales: {
-                        y: { min: 95, max: 100, ticks: { callback: v => v+'%', font: { size: 10 } }, grid: { color: '#e9edf4' } },
-                        x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+                        y: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#e9edf4' },
+                            ticks: { font: { size: 11 }, callback: v => v >= 1000 ? (v / 1000) + 'K' : v },
+                            title: { display: true, text: '产量 (台)', color: '#0033a0', font: { size: 11 } } },
+                        y1: { type: 'linear', position: 'right', min: 95, max: 100.5, grid: { display: false },
+                            ticks: { font: { size: 11 }, callback: v => v + '%' },
+                            title: { display: true, text: '综合RTY (%)', color: '#d93025', font: { size: 11 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
                     }
                 }
             });
-        });
-    }
 
-    createCharts('');
-    createCharts('_clone');
-
-    // ============================================================
-    // 柏拉图
-    // ============================================================
-    function renderPareto(containerId) {
-        const paretoData = [
-            { label: '电检', value: 279, color: '#d93025' },
-            { label: '装配', value: 180, color: '#f9ab00' },
-            { label: '气检', value: 45, color: '#f9ab00' },
-            { label: '拍照', value: 31, color: '#0033a0' },
-            { label: 'GP12', value: 24, color: '#4a5a72' }
-        ];
-        const totalP = paretoData.reduce((s, d) => s + d.value, 0);
-        let cumP = 0;
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '';
-        paretoData.forEach((item) => {
-            cumP += item.value;
-            const pct = Math.round((item.value / totalP) * 100);
-            const cumPct = Math.round((cumP / totalP) * 100);
-            const row = document.createElement('div');
-            row.className = 'pareto-row';
-            row.innerHTML = `
-                <span class="p-label">${item.label}</span>
-                <div class="p-bar-bg"><div class="p-bar" style="width:${pct}%;background:${item.color};">${pct}%</div></div>
-                <span class="p-val">${item.value}</span>
-                <span class="p-pct">${cumPct}%</span>
+            const avgRTY = avg(RTY_DATA);
+            const maxRTY = max(RTY_DATA);
+            const minRTY = min(RTY_DATA);
+            const maxIdx = RTY_DATA.indexOf(maxRTY);
+            const minIdx = RTY_DATA.indexOf(minRTY);
+            document.getElementById('chartSummaryStats').innerHTML = `
+                <span>📊 平均RTY: <strong>${formatPct(avgRTY)}</strong> · 最高 <strong>${formatPct(maxRTY)}</strong> (${MONTHS[maxIdx]}) · 最低 <strong>${formatPct(minRTY)}</strong> (${MONTHS[minIdx]})</span>
+                <span>📦 总产量 <strong>${formatNum(sum(PROD_DATA))}</strong> 台 · 月均 <strong>${formatNum(sum(PROD_DATA)/totalMonths)}</strong> 台</span>
             `;
-            container.appendChild(row);
-        });
-    }
 
-    renderPareto('paretoList');
-    renderPareto('paretoList_clone');
+            // 2. 工序对比
+            const procLabels = Object.keys(PROC_CURRENT);
+            const curVals = procLabels.map(k => PROC_CURRENT[k]);
+            const prevVals = procLabels.map(k => PROC_PREV[k] || 0);
 
-    console.log('✅ 看板已加载 (含4项AI智能建议)');
-    console.log('📊 6月不良合计: 559件 | 5月不良合计: 950件 | 变化: -391件 (-41%)');
-    console.log('📦 1-6月累计产量: 351,579台 | 累计不良: 3,910件');
-</script>
+            new Chart(document.getElementById('chartCompare'), {
+                type: 'bar',
+                data: {
+                    labels: procLabels,
+                    datasets: [
+                        { label: '6月', data: prevVals, backgroundColor: 'rgba(0,51,160,0.6)',
+                        borderRadius: 4 },
+                        { label: '7月', data: curVals, backgroundColor: 'rgba(217,48,37,0.8)',
+                            borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#e9edf4' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            let maxIncLabel = '',
+                maxIncVal = 0,
+                maxDecLabel = '',
+                maxDecVal = 0;
+            procLabels.forEach(k => {
+                const diff = (PROC_CURRENT[k] || 0) - (PROC_PREV[k] || 0);
+                if (diff > maxIncVal) { maxIncVal = diff;
+                    maxIncLabel = k; }
+                if (diff < maxDecVal) { maxDecVal = diff;
+                    maxDecLabel = k; }
+            });
+            document.getElementById('compareAnnotation').innerHTML = `
+                ⚠️ <strong>${maxIncLabel}</strong> ▲ ${Math.abs(maxIncVal)}件（唯一恶化） · 
+                <strong>${maxDecLabel}</strong> ▼ ${Math.abs(maxDecVal)}件 改善最大
+            `;
+
+            // 3. 月度不良趋势
+            new Chart(document.getElementById('chartTrend'), {
+                type: 'bar',
+                data: {
+                    labels: MONTHS,
+                    datasets: [
+                        { label: '月度不良', data: MONTHLY_BAD, backgroundColor: 'rgba(217,48,37,0.7)',
+                            borderRadius: 4, order: 2, yAxisID: 'y' },
+                        { label: '累积不良', data: CUM_BAD, type: 'line', borderColor: '#0033a0',
+                            backgroundColor: 'rgba(0,51,160,0.08)', tension: 0.2, pointRadius: 5,
+                            pointBackgroundColor: '#0033a0', pointBorderColor: 'white', pointBorderWidth: 2,
+                            fill: true, order: 1, borderWidth: 3, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } } },
+                    scales: {
+                        y: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#e9edf4' },
+                            ticks: { font: { size: 11 } },
+                            title: { display: true, text: '月度不良 (件)', color: '#d93025', font: { size: 11 } } },
+                        y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { display: false },
+                            ticks: { font: { size: 11 } },
+                            title: { display: true, text: '累积不良 (件)', color: '#0033a0', font: { size: 11 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+                    }
+                }
+            });
+
+            // 4. 各产线
+            const lineContainer = document.getElementById('productLines');
+            let lineHTML = '';
+            LINE_NAMES.forEach((name, idx) => {
+                const color = LINE_COLORS[idx % LINE_COLORS.length];
+                const lastRTY = LINE_RTY[idx][lastIdx];
+                const change = LINE_RTY_CHANGE[idx];
+                const badDetail = LINE_BAD_DETAIL[idx];
+                const detailStr = Object.entries(badDetail).map(([k, v]) => `${k}${v}`).join(' · ');
+                const cumBad = LINE_CUM_BAD[idx];
+                const monthBad = LINE_MONTH_BAD[idx];
+                const changeColor = change >= 0 ? '#1e8e3e' : '#d93025';
+                let cardClass = 'card';
+                if (idx === 0) cardClass += ' card-tclient';
+                else if (idx === 1) cardClass += ' card-w04';
+                else cardClass += ' card-d01';
+                const badgeLabel = idx === 0 ? '标杆' : idx === 1 ? '最大短板' : '改善中';
+                const badgeClass = idx === 0 ? 'badge-green' : idx === 1 ? 'badge-red' : 'badge-yellow';
+
+                lineHTML += `
+                    <div class="${cardClass}">
+                        <div class="card-title">${idx === 0 ? '🏆' : idx === 1 ? '🔴' : '🔧'} ${name} <span class="badge ${badgeClass}">${badgeLabel}</span></div>
+                        <div style="font-size:13px;color:#4a5a72;margin-bottom:6px;">
+                            7月 RTY <strong style="color:${color};font-size:20px;">${formatPct(lastRTY)}</strong> 
+                            <span style="color:${changeColor};font-size:13px;">${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%</span>
+                        </div>
+                        <div class="chart-container short">
+                            <canvas id="chartLine_${idx}"></canvas>
+                        </div>
+                        <div style="font-size:12px;color:#4a5a72;margin-top:6px;background:#f8faff;padding:6px 10px;border-radius:6px;">
+                            ${detailStr}
+                        </div>
+                        <div style="font-size:11px;color:#4a5a72;margin-top:4px;background:#f8faff;padding:4px 10px;border-radius:6px;">
+                            📦 1-7月累计: <strong>${formatNum(cumBad)}</strong> · 7月不良 <strong>${formatNum(monthBad)}</strong>
+                        </div>
+                    </div>
+                `;
+            });
+            lineContainer.innerHTML = lineHTML;
+
+            LINE_NAMES.forEach((name, idx) => {
+                const canvas = document.getElementById('chartLine_' + idx);
+                if (!canvas) return;
+                const color = LINE_COLORS[idx % LINE_COLORS.length];
+                new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: MONTHS,
+                        datasets: [{ label: name + ' RTY', data: LINE_RTY[idx], borderColor: color,
+                            tension: 0.2, pointRadius: 4, borderWidth: 3, fill: false }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { min: 95, max: 100, ticks: { callback: v => v + '%', font: { size: 10 } },
+                                grid: { color: '#e9edf4' } },
+                            x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+                        }
+                    }
+                });
+            });
+        }
+
+        // ---- 柏拉图 ----
+        function renderPareto() {
+            const container = document.getElementById('paretoList');
+            const totalP = PARETO_DATA.reduce((s, d) => s + d.value, 0);
+            let cumP = 0;
+            let html = '';
+            PARETO_DATA.forEach((item) => {
+                cumP += item.value;
+                const pct = totalP > 0 ? Math.round((item.value / totalP) * 100) : 0;
+                const cumPct = totalP > 0 ? Math.round((cumP / totalP) * 100) : 0;
+                html += `
+                    <div class="pareto-row">
+                        <span class="p-label">${item.label}</span>
+                        <div class="p-bar-bg"><div class="p-bar" style="width:${pct}%;background:${item.color};">${pct}%</div></div>
+                        <span class="p-val">${item.value}</span>
+                        <span class="p-pct">${cumPct}%</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            const topTwo = PARETO_DATA.slice(0, 2);
+            const topTwoSum = topTwo.reduce((s, d) => s + d.value, 0);
+            const topTwoPct = totalP > 0 ? Math.round((topTwoSum / totalP) * 100) : 0;
+            document.getElementById('paretoAnnotation').innerHTML = `
+                🔴 <strong>${topTwo.map(d => d.label).join('+')}</strong> 占不良总数 <strong>${topTwoPct}%</strong> — 聚焦关键少数
+            `;
+        }
+
+        // ---- 改善优先级 ----
+        function renderPriorities() {
+            const container = document.getElementById('priorityList');
+            const totalP = PARETO_DATA.reduce((s, d) => s + d.value, 0);
+            const priorityMap = [
+                { label: PARETO_DATA[0].label, p: 'P0', color: 'priority-p0',
+                desc: `7月不良 <strong>${PARETO_DATA[0].value}件</strong>，占${totalP > 0 ? Math.round((PARETO_DATA[0].value/totalP)*100) : 0}%` },
+                { label: PARETO_DATA[1].label, p: 'P1', color: 'priority-p1',
+                desc: `7月不良 <strong>${PARETO_DATA[1].value}件</strong>，占${totalP > 0 ? Math.round((PARETO_DATA[1].value/totalP)*100) : 0}%` },
+                { label: PARETO_DATA[2].label, p: 'P2', color: 'priority-p2',
+                desc: `7月不良 <strong>${PARETO_DATA[2].value}件</strong>，占${totalP > 0 ? Math.round((PARETO_DATA[2].value/totalP)*100) : 0}%` },
+                { label: '其他工序', p: 'P3', color: 'priority-p3', desc: '持续监控，维持当前管控水平' }
+            ];
+            const priorityIcons = { P0: '🔴', P1: '🟠', P2: '🟡', P3: '🟢' };
+            let html = '';
+            priorityMap.forEach((item, idx) => {
+                const icon = priorityIcons[item.p] || '🟢';
+                html += `
+                    <div class="suggestion-item ${item.color}">
+                        <div class="s-title">${icon} ${item.p} · ${item.label}</div>
+                        <div class="s-desc">${item.desc}</div>
+                        <div class="s-action">→ ${idx === 0 ? '立即成立专项改善小组' : idx === 1 ? '制定改善计划，本周执行' : idx === 2 ? '持续监控，巩固成果' : '维持当前水平'}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ---- AI建议 ----
+        function renderAI() {
+            const totalBad = MONTHLY_BAD[lastIdx];
+            const prevBad = MONTHLY_BAD[prevIdx];
+            const badChange = totalBad - prevBad;
+            const maxBadProc = Object.entries(PROC_CURRENT).reduce((a, b) => a[1] > b[1] ? a : b);
+
+            const suggestions = [{
+                tag: '🔴 高优先级 · 根因分析',
+                title: '① D01装配不良上升 200%（8→24件）',
+                desc: '7月D01装配不良从6月8件增至24件，建议对7月1-15日与16-31日分段追溯，锁定设备参数漂移或新员工上岗批次。',
+                impact: '📈 预计改善后 D01 RTY 可回升至 99.0%+',
+                confidence: '置信度 90%'
+            }, {
+                tag: '🟡 中优先级 · 预测性维护',
+                title: '② W04装配不良暴降 178→0件（-100%）',
+                desc: '6月W04装配不良178件，7月为0件。建议复盘6月异常批次，将有效改善措施固化为标准作业程序，防止复发。',
+                impact: '📉 固化经验，长期稳定 W04 RTY 在 99.0% 以上',
+                confidence: '置信度 85%'
+            }, {
+                tag: '🟢 优化建议 · 排产策略',
+                title: '③ 7月产量仅为6月的28%，RTY提升0.28%',
+                desc: '产量骤降可能带来质量管控的"宽松效应"。建议在8月恢复产量时，重点关注电检工序（7月108件仍为最大不良源）。',
+                impact: '⚖️ 产量恢复后目标RTY ≥ 99.0%',
+                confidence: '置信度 76%'
+            }, {
+                tag: '🟢 长期优化 · 智能化升级',
+                title: '④ 气检工序7月实现零不良',
+                desc: '气检不良从6月45件降至7月0件。建议将该工序的管控经验复制到电检和拍照工序，推动全流程零不良目标。',
+                impact: '🤖 目标将总不良控制在 100件/月 以内',
+                confidence: '置信度 72%'
+            }];
+
+            const container = document.getElementById('aiSuggestions');
+            let html = '';
+            suggestions.forEach(item => {
+                html += `
+                    <div class="ai-item">
+                        <div class="ai-tag">${item.tag}</div>
+                        <div class="ai-title">${item.title}</div>
+                        <div class="ai-desc">${item.desc}</div>
+                        <div class="ai-impact"><span>${item.impact}</span> <span class="ai-confidence">${item.confidence}</span></div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ---- 变化详情 ----
+        function renderChangeDetail() {
+            const procLabels = Object.keys(PROC_CURRENT);
+            const colors = ['#d93025', '#1e8e3e', '#1e8e3e', '#1e8e3e', '#1e8e3e'];
+            const container = document.getElementById('changeDetailGrid');
+            let html = '';
+            procLabels.forEach((k, idx) => {
+                const cur = PROC_CURRENT[k] || 0;
+                const prev = PROC_PREV[k] || 0;
+                const diff = cur - prev;
+                const color = diff > 0 ? '#d93025' : '#1e8e3e';
+                const arrow = diff > 0 ? '▲' : '▼';
+                const pct = prev !== 0 ? ((diff / prev) * 100) : (cur > 0 ? 100 : 0);
+                html += `
+                    <div style="background:#f8faff;padding:10px 12px;border-radius:8px;border-left:3px solid ${color};text-align:center;">
+                        <div style="color:#4a5a72;font-size:11px;">${k}</div>
+                        <div style="font-weight:700;font-size:18px;color:${color};">${arrow}${Math.abs(diff)}</div>
+                        <div style="font-size:11px;color:${color};">${diff !== 0 ? (diff > 0 ? '+' : '') + pct.toFixed(1) + '%' : '持平'}</div>
+                        <div style="font-size:10px;color:#6b7a8f;">${prev}→${cur}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ---- 8月目标 ----
+        function renderTargets() {
+            const container = document.getElementById('targetList');
+            container.innerHTML = `
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #d93025;">
+                        <div style="font-weight:700;">① D01 装配专项</div>
+                        <div style="font-size:13px;color:#4a5a72;">排查装配线设备/治具/人员 → 目标 <strong style="color:#1e8e3e;">≤5件</strong></div>
+                    </div>
+                    <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #f9ab00;">
+                        <div style="font-weight:700;">② 电检持续改善</div>
+                        <div style="font-size:13px;color:#4a5a72;">全面校准电检测试设备 → 目标 <strong style="color:#1e8e3e;">≤60件</strong></div>
+                    </div>
+                    <div style="background:#f8faff;padding:10px 14px;border-radius:10px;border-left:4px solid #0033a0;">
+                        <div style="font-weight:700;">③ W04 经验固化</div>
+                        <div style="font-size:13px;color:#4a5a72;">将6月→7月改善措施标准化 → 目标 <strong style="color:#1e8e3e;">装配≤2件</strong></div>
+                    </div>
+                    <div style="margin-top:4px;font-size:12px;color:#4a5a72;background:#eaf0fa;padding:8px 14px;border-radius:8px;">
+                        📅 <strong>8月目标：</strong>综合RTY ≥ 99.2% · 总不良 ≤ 200件（产量恢复后）
+                    </div>
+                </div>
+            `;
+        }
+
+        // ---- 执行 ----
+        renderKPI();
+        renderCompare();
+        renderCharts();
+        renderPareto();
+        renderPriorities();
+        renderAI();
+        renderChangeDetail();
+        renderTargets();
+
+        console.log('✅ 质量看板已加载（1-7月，6月vs7月对比）');
+        console.log(`📊 7月RTY: ${formatPct(RTY_DATA[lastIdx])}, 不良: ${MONTHLY_BAD[lastIdx]}件`);
+        console.log(`📈 6月→7月变化: RTY ${(RTY_DATA[lastIdx] - RTY_DATA[prevIdx]) >= 0 ? '+' : ''}${(RTY_DATA[lastIdx] - RTY_DATA[prevIdx]).toFixed(2)}%, 不良 ${MONTHLY_BAD[lastIdx] - MONTHLY_BAD[prevIdx] >= 0 ? '+' : ''}${MONTHLY_BAD[lastIdx] - MONTHLY_BAD[prevIdx]}件`);
+    </script>
 </body>
 </html>
