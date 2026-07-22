@@ -47,7 +47,6 @@
       background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     }
 
-    /* Header */
     .header {
       display: flex;
       justify-content: space-between;
@@ -97,10 +96,18 @@
       font-size: clamp(18px, 1.8vw, 26px);
       font-weight: 700;
     }
-    .stat-value.blue { color: var(--accent-blue); }
-    .stat-value.green { color: var(--accent-green); }
-    .stat-value.red { color: var(--accent-red); }
-    .stat-value.cyan { color: var(--accent-cyan); }
+    .stat-value.blue {
+      color: var(--accent-blue);
+    }
+    .stat-value.green {
+      color: var(--accent-green);
+    }
+    .stat-value.red {
+      color: var(--accent-red);
+    }
+    .stat-value.cyan {
+      color: var(--accent-cyan);
+    }
     .datetime {
       font-size: clamp(12px, 1vw, 15px);
       color: var(--text-secondary);
@@ -108,7 +115,6 @@
       text-align: right;
     }
 
-    /* Grid */
     .row-main {
       flex: 1;
       display: grid;
@@ -124,7 +130,6 @@
       min-height: 0;
     }
 
-    /* Panel */
     .panel {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -167,7 +172,6 @@
       height: 100%;
     }
 
-    /* 表格 */
     .table-wrap {
       flex: 1;
       overflow-y: auto;
@@ -216,11 +220,19 @@
       font-size: 11px;
       font-weight: 500;
     }
-    .tag.green { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-    .tag.red { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
-    .tag.orange { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+    .tag.green {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+    }
+    .tag.red {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+    }
+    .tag.orange {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-yellow);
+    }
 
-    /* ---------- 右侧：月度明细 (滚动) + AI建议 (静态) ---------- */
     .right-content {
       flex: 1;
       display: flex;
@@ -229,7 +241,6 @@
       min-height: 0;
     }
 
-    /* 月度明细滚动容器 */
     .month-scroll {
       flex: 1;
       overflow: hidden;
@@ -256,9 +267,20 @@
       gap: 10px;
       white-space: nowrap;
     }
-    .month-track .month-item .m-label { min-width: 32px; font-weight: 500; color: #a0b3d9; }
-    .month-track .month-item .m-value { min-width: 52px; text-align: right; font-weight: 600; }
-    .month-track .month-item .m-status { min-width: 44px; text-align: center; }
+    .month-track .month-item .m-label {
+      min-width: 32px;
+      font-weight: 500;
+      color: #a0b3d9;
+    }
+    .month-track .month-item .m-value {
+      min-width: 52px;
+      text-align: right;
+      font-weight: 600;
+    }
+    .month-track .month-item .m-status {
+      min-width: 44px;
+      text-align: center;
+    }
 
     .mini-tag {
       display: inline-block;
@@ -267,19 +289,28 @@
       font-size: 10px;
       font-weight: 500;
     }
-    .mini-tag.green { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-    .mini-tag.red { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+    .mini-tag.green {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+    }
+    .mini-tag.red {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+    }
 
     .month-scroll:hover .month-track {
       animation-play-state: paused;
     }
 
     @keyframes scrollVertical {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-50%); }
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-50%);
+      }
     }
 
-    /* AI建议静态区域 */
     .ai-static {
       flex: 0 0 auto;
       background: rgba(0, 0, 0, 0.2);
@@ -314,290 +345,429 @@
       margin-right: 4px;
     }
 
-    /* Responsive */
     @media (max-width: 1024px) {
-      .row-main { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
-      .row-main .panel:last-child { grid-column: span 2; }
-      .row-bottom { grid-template-columns: 1fr 1fr; }
-      .row-bottom .panel:last-child { grid-column: span 2; }
+      .row-main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
+      .row-main .panel:last-child {
+        grid-column: span 2;
+      }
+      .row-bottom {
+        grid-template-columns: 1fr 1fr;
+      }
+      .row-bottom .panel:last-child {
+        grid-column: span 2;
+      }
     }
     @media (max-width: 768px) {
-      .row-main, .row-bottom { grid-template-columns: 1fr; }
-      .row-main .panel:last-child, .row-bottom .panel:last-child { grid-column: span 1; }
-      .header { flex-wrap: wrap; height: auto; gap: 8px; padding: 10px 16px; }
-      .header-stats { gap: 12px; }
+      .row-main,
+      .row-bottom {
+        grid-template-columns: 1fr;
+      }
+      .row-main .panel:last-child,
+      .row-bottom .panel:last-child {
+        grid-column: span 1;
+      }
+      .header {
+        flex-wrap: wrap;
+        height: auto;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+      .header-stats {
+        gap: 12px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="dashboard">
-  <!-- Header -->
-  <div class="header">
-    <div class="header-title"><h1>HVAC车间 · 月度看板</h1></div>
-    <div class="header-stats">
-      <div class="stat-item"><span class="stat-label">📆 7月累计不良</span><span class="stat-value red" id="kpiBad">--</span></div>
-      <div class="stat-item"><span class="stat-label">📦 7月累计产量</span><span class="stat-value blue" id="kpiOutput">--</span></div>
-      <div class="stat-item"><span class="stat-label">📊 7月良品率</span><span class="stat-value green" id="kpiYield">--</span></div>
-      <div class="stat-item"><span class="stat-label">🎯 目标</span><span class="stat-value cyan">98%</span></div>
+  <div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-title"><h1>HVAC车间 · 月度看板</h1></div>
+      <div class="header-stats">
+        <div class="stat-item"><span class="stat-label">📆 7月累计不良</span><span class="stat-value red" id="kpiBad">--</span></div>
+        <div class="stat-item"><span class="stat-label">📦 7月累计产量</span><span class="stat-value blue" id="kpiOutput">--</span></div>
+        <div class="stat-item"><span class="stat-label">📊 7月良品率</span><span class="stat-value green" id="kpiYield">--</span></div>
+        <div class="stat-item"><span class="stat-label">🎯 目标</span><span class="stat-value cyan">98%</span></div>
+      </div>
+      <div class="datetime" id="datetime"></div>
     </div>
-    <div class="datetime" id="datetime"></div>
-  </div>
 
-  <!-- Row 2 -->
-  <div class="row-main">
-    <div class="panel"><div class="panel-header"><span class="panel-title">📈 月度良品率趋势 (1–7月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
-    <div class="panel"><div class="panel-header"><span class="panel-title">📊 各产品月度良品率对比</span></div><div class="panel-body"><div class="chart-container"><canvas id="productTrendChart"></canvas></div></div></div>
-    <div class="panel"><div class="panel-header"><span class="panel-title">🏭 7月各产品良品率</span></div><div class="panel-body"><div class="chart-container"><canvas id="julyProductChart"></canvas></div></div></div>
-  </div>
+    <!-- Row 2 -->
+    <div class="row-main">
+      <div class="panel"><div class="panel-header"><span class="panel-title">📈 月度良品率趋势 (1–7月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">📊 各产品月度良品率对比</span></div><div class="panel-body"><div class="chart-container"><canvas id="productTrendChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">🏭 7月各产品良品率</span></div><div class="panel-body"><div class="chart-container"><canvas id="julyProductChart"></canvas></div></div></div>
+    </div>
 
-  <!-- Row 3 -->
-  <div class="row-bottom">
-    <div class="panel"><div class="panel-header"><span class="panel-title">🧩 7月不良 · 工序分布</span></div><div class="panel-body"><div class="chart-container"><canvas id="stationChart"></canvas></div></div></div>
-    <div class="panel"><div class="panel-header"><span class="panel-title">⚠️ TOP失效模式 (7月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="defectChart"></canvas></div></div></div>
+    <!-- Row 3 -->
+    <div class="row-bottom">
+      <div class="panel"><div class="panel-header"><span class="panel-title">🧩 7月不良 · 工序分布</span></div><div class="panel-body"><div class="chart-container"><canvas id="stationChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">⚠️ TOP失效模式 (7月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="defectChart"></canvas></div></div></div>
 
-    <!-- 右侧：月度明细 (滚动) + AI建议 (静态) -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">📋 月度明细 & AI建议</span></div>
-      <div class="panel-body" style="padding:4px 6px 6px 6px;">
-        <div class="right-content">
-          <!-- 月度明细滚动 -->
-          <div class="month-scroll">
-            <div class="month-track" id="monthTrack">
-              <!-- 由JS生成 -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">📋 月度明细 & AI建议</span></div>
+        <div class="panel-body" style="padding:4px 6px 6px 6px;">
+          <div class="right-content">
+            <div class="month-scroll">
+              <div class="month-track" id="monthTrack"></div>
             </div>
-          </div>
-          <!-- AI建议静态 -->
-          <div class="ai-static" id="aiStatic">
-            <!-- 由JS生成 -->
+            <div class="ai-static" id="aiStatic"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  // ================================================================
-  // 1. 核心数据
-  // ================================================================
-  const rtyData = {
-    'T客户': [0.9918340480804916, 0.9971683873720136, 0.9970267211615074, 0.9869827374801955, 0.9861061841001132, 0.9925697390293058, 0.9996],
-    'W04':   [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9916],
-    'D01':   [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9863]
-  };
-  const prodNames = ['T客户', 'W04', 'D01'];
-  const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
+  <script>
+    // ================================================================
+    // 1. 核心数据 (从Excel提取)
+    // ================================================================
 
-  const prodJuly = { 'T客户': { prod: 16987, rty: 0.9996 }, 'W04': { prod: 6676, rty: 0.9916 }, 'D01': { prod: 4960, rty: 0.9863 } };
-  const julyGood = {}, julyBad = {};
-  for (const p of prodNames) {
-    const good = Math.round(prodJuly[p].prod * prodJuly[p].rty);
-    const bad = prodJuly[p].prod - good;
-    julyGood[p] = good; julyBad[p] = bad;
-  }
+    // 各产品RTY数据 (1-7月)
+    const rtyData = {
+      'T客户': [0.9918340480804916, 0.9971683873720136, 0.9970267211615074, 0.9869827374801955, 0.9861061841001132, 0.9925697390293058, 0.9996],
+      'W04': [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9916],
+      'D01': [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9863]
+    };
 
-  const stationLabels = ['装配', '气检', '电检', '拍照', 'GP12'];
-  const stationValues = [31, 1, 235, 16, 17];
+    // 各产品每月生产数
+    const prodQty = {
+      'T客户': [24251, 23440, 33887, 29034, 27409, 28102, 16987],
+      'W04': [20575, 16786, 22295, 20960, 20944, 20960, 6676],
+      'D01': [6637, 363, 12705, 13166, 12725, 13354, 4960]
+    };
 
-  const defectMap = { '装配异常': 31, '气密泄漏': 1, '电检失效': 235, '拍照识别异常': 16, 'GP12外观缺陷': 17 };
-  const defectLabels = Object.keys(defectMap);
-  const defectValues = Object.values(defectMap);
+    const prodNames = ['T客户', 'W04', 'D01'];
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
 
-  // ================================================================
-  // 2. 月度平均良品率
-  // ================================================================
-  function avgRTY(monthIdx) {
-    let sum = 0;
-    for (const p of prodNames) sum += rtyData[p][monthIdx];
-    return sum / prodNames.length;
-  }
-  const monthlyYield = months.map((_, idx) => avgRTY(idx));
+    // 7月生产数
+    const julyProd = {
+      'T客户': 16987,
+      'W04': 6676,
+      'D01': 4960
+    };
 
-  // ================================================================
-  // 3. KPI
-  // ================================================================
-  const totalProd = prodJuly['T客户'].prod + prodJuly['W04'].prod + prodJuly['D01'].prod;
-  const totalGood = julyGood['T客户'] + julyGood['W04'] + julyGood['D01'];
-  const totalBad = totalProd - totalGood;
-  const yield7 = totalGood / totalProd;
-  document.getElementById('kpiBad').textContent = totalBad.toLocaleString();
-  document.getElementById('kpiOutput').textContent = totalProd.toLocaleString();
-  document.getElementById('kpiYield').textContent = (yield7 * 100).toFixed(2) + '%';
+    // 7月工序不良明细 (从Excel 7月 sheet提取)
+    const stationData = {
+      '装配': { 'T客户': 0, 'W04': 0, 'D01': 31 },
+      '气检': { 'T客户': 0, 'W04': 1, 'D01': 0 },
+      '电检': { 'T客户': 163, 'W04': 37, 'D01': 35 },
+      '拍照': { 'T客户': 0, 'W04': 15, 'D01': 1 },
+      'GP12': { 'T客户': 13, 'W04': 3, 'D01': 1 }
+    };
 
-  // ================================================================
-  // 4. 时间
-  // ================================================================
-  function updateDateTime() {
-    const now = new Date();
-    document.getElementById('datetime').textContent = now.toLocaleString('zh-CN', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    // 计算7月各产品不良数 (按工序累加)
+    const julyBad = {};
+    for (const p of prodNames) {
+      let total = 0;
+      for (const s of Object.keys(stationData)) {
+        total += stationData[s][p];
+      }
+      julyBad[p] = total;
+    }
+
+    // 计算7月各产品良品数
+    const julyGood = {};
+    let totalBad = 0;
+    let totalProd = 0;
+    for (const p of prodNames) {
+      julyGood[p] = julyProd[p] - julyBad[p];
+      totalBad += julyBad[p];
+      totalProd += julyProd[p];
+    }
+
+    // 7月各产品实际良品率 (基于工序不良累加)
+    const julyRTY = {};
+    for (const p of prodNames) {
+      julyRTY[p] = julyGood[p] / julyProd[p];
+    }
+
+    // 工序汇总
+    const stationLabels = ['装配', '气检', '电检', '拍照', 'GP12'];
+    const stationValues = stationLabels.map(s => {
+      let sum = 0;
+      for (const p of prodNames) sum += stationData[s][p];
+      return sum;
     });
-  }
-  setInterval(updateDateTime, 1000);
-  updateDateTime();
 
-  // ================================================================
-  // 5. Chart.js 渲染 (深色)
-  // ================================================================
-  Chart.defaults.color = '#c8d0dc';
-  Chart.defaults.borderColor = '#1a2540';
-
-  new Chart(document.getElementById('trendChart').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: months,
-      datasets: [{
-        label: '综合良品率',
-        data: monthlyYield.map(v => +(v * 100).toFixed(2)),
-        borderColor: '#60a5fa',
-        backgroundColor: 'rgba(96,165,250,0.08)',
-        fill: true,
-        tension: 0.25,
-        pointBackgroundColor: '#60a5fa',
-        pointBorderColor: '#0f1729',
-        pointBorderWidth: 2,
-        pointRadius: 4,
-      }, {
-        label: '目标 98%',
-        data: months.map(() => 98),
-        borderColor: '#f87171',
-        borderDash: [6, 4],
-        borderWidth: 2,
-        pointRadius: 0,
-        fill: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 12, font: { size: 10 } } } },
-      scales: {
-        y: { min: 95.5, max: 100, ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } },
-        x: { ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
+    // 失效模式 (工序+产品组合)
+    const defectItems = [];
+    for (const s of stationLabels) {
+      for (const p of prodNames) {
+        const val = stationData[s][p];
+        if (val > 0) {
+          defectItems.push({ label: `${s}(${p})`, value: val });
+        }
       }
     }
-  });
+    defectItems.sort((a, b) => b.value - a.value);
+    const defectLabels = defectItems.map(d => d.label);
+    const defectValues = defectItems.map(d => d.value);
 
-  new Chart(document.getElementById('productTrendChart').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: months,
-      datasets: prodNames.map((p, idx) => ({
-        label: p,
-        data: rtyData[p].map(v => +(v * 100).toFixed(2)),
-        borderColor: ['#f87171', '#60a5fa', '#4ade80'][idx % 3],
-        backgroundColor: 'transparent',
-        tension: 0.2,
-        pointRadius: 3,
-        borderWidth: 2,
-      }))
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 10, font: { size: 9 } } } },
-      scales: {
-        y: { min: 94, max: 100, ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } },
-        x: { ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
+    // ================================================================
+    // 2. 月度平均良品率 (使用RTY数据)
+    // ================================================================
+    function avgRTY(monthIdx) {
+      let sum = 0;
+      for (const p of prodNames) sum += rtyData[p][monthIdx];
+      return sum / prodNames.length;
+    }
+    const monthlyYield = months.map((_, idx) => avgRTY(idx));
+
+    // ================================================================
+    // 3. KPI
+    // ================================================================
+    const yield7 = 1 - totalBad / totalProd;
+    document.getElementById('kpiBad').textContent = totalBad.toLocaleString();
+    document.getElementById('kpiOutput').textContent = totalProd.toLocaleString();
+    document.getElementById('kpiYield').textContent = (yield7 * 100).toFixed(2) + '%';
+
+    // ================================================================
+    // 4. 时间
+    // ================================================================
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('datetime').textContent = now.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // ================================================================
+    // 5. Chart.js 渲染 (深色)
+    // ================================================================
+    Chart.defaults.color = '#c8d0dc';
+    Chart.defaults.borderColor = '#1a2540';
+
+    // 5.1 月度良品率趋势
+    new Chart(document.getElementById('trendChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{
+          label: '综合良品率',
+          data: monthlyYield.map(v => +(v * 100).toFixed(2)),
+          borderColor: '#60a5fa',
+          backgroundColor: 'rgba(96,165,250,0.08)',
+          fill: true,
+          tension: 0.25,
+          pointBackgroundColor: '#60a5fa',
+          pointBorderColor: '#0f1729',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+        }, {
+          label: '目标 98%',
+          data: months.map(() => 98),
+          borderColor: '#f87171',
+          borderDash: [6, 4],
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { usePointStyle: true, boxWidth: 8, padding: 12, font: { size: 10 } }
+          }
+        },
+        scales: {
+          y: {
+            min: 95.5,
+            max: 100,
+            ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          },
+          x: {
+            ticks: { color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          }
+        }
       }
-    }
-  });
-
-  new Chart(document.getElementById('julyProductChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: prodNames,
-      datasets: [{
-        label: '良品率 (%)',
-        data: prodNames.map(p => +(prodJuly[p].rty * 100).toFixed(2)),
-        backgroundColor: ['#f8717166', '#60a5fa66', '#4ade8066'],
-        borderColor: ['#f87171', '#60a5fa', '#4ade80'],
-        borderWidth: 2,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { min: 93, max: 100, ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } },
-        x: { ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
-      }
-    }
-  });
-
-  new Chart(document.getElementById('stationChart').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: stationLabels,
-      datasets: [{ data: stationValues, backgroundColor: ['#60a5fa', '#4ade80', '#fb923c', '#f87171', '#a78bfa'], borderWidth: 1, borderColor: '#0f1729' }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 9 }, color: '#c8d0dc' } } }
-    }
-  });
-
-  new Chart(document.getElementById('defectChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: defectLabels,
-      datasets: [{
-        label: '不良数量',
-        data: defectValues,
-        backgroundColor: ['#f8717177', '#fb923c77', '#facc1577', '#60a5fa77', '#a78bfa77'],
-        borderColor: ['#f87171', '#fb923c', '#facc15', '#60a5fa', '#a78bfa'],
-        borderWidth: 2,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { beginAtZero: true, ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } },
-        y: { ticks: { color: '#7a8599', font: { size: 9 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
-      }
-    }
-  });
-
-  // ================================================================
-  // 6. 右侧内容: 月度明细(滚动) + AI建议(静态)
-  // ================================================================
-  // 6.1 月度明细滚动 (生成两遍实现无缝)
-  const monthTrack = document.getElementById('monthTrack');
-  function buildMonthItems() {
-    return months.map((m, i) => {
-      const y = monthlyYield[i] * 100;
-      const status = y >= 98 ? '达标' : '未达标';
-      const cls = y >= 98 ? 'green' : 'red';
-      return `<div class="month-item">
-        <span class="m-label">${m}</span>
-        <span class="m-value">${y.toFixed(2)}%</span>
-        <span class="m-status"><span class="mini-tag ${cls}">${status}</span></span>
-      </div>`;
     });
-  }
-  const monthItems = buildMonthItems();
-  // 重复两遍
-  monthTrack.innerHTML = [...monthItems, ...monthItems].join('');
 
-  // 6.2 AI建议静态 (不滚动)
-  const aiStatic = document.getElementById('aiStatic');
-  const suggestions = [
-    { label: '装配', text: '7月不良31件，建议加强定位工装' },
-    { label: '气检/氦检', text: '不良1件，需检漏参数复测' },
-    { label: '电检', text: '不良235件，建议优化测试治具' },
-    { label: '拍照/GP12', text: '合计33件，增加视觉防错' }
-  ];
-  aiStatic.innerHTML = suggestions.map(s =>
-    `<div class="ai-item"><strong>${s.label}</strong> ${s.text}</div>`
-  ).join('');
-</script>
+    // 5.2 各产品月度良品率对比
+    new Chart(document.getElementById('productTrendChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: prodNames.map((p, idx) => ({
+          label: p,
+          data: rtyData[p].map(v => +(v * 100).toFixed(2)),
+          borderColor: ['#f87171', '#60a5fa', '#4ade80'][idx % 3],
+          backgroundColor: 'transparent',
+          tension: 0.2,
+          pointRadius: 3,
+          borderWidth: 2,
+        }))
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { usePointStyle: true, boxWidth: 8, padding: 10, font: { size: 9 } }
+          }
+        },
+        scales: {
+          y: {
+            min: 94,
+            max: 100,
+            ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          },
+          x: {
+            ticks: { color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          }
+        }
+      }
+    });
+
+    // 5.3 7月各产品良品率 (基于工序不良累加)
+    new Chart(document.getElementById('julyProductChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: prodNames,
+        datasets: [{
+          label: '良品率 (%)',
+          data: prodNames.map(p => +(julyRTY[p] * 100).toFixed(2)),
+          backgroundColor: ['#f8717166', '#60a5fa66', '#4ade8066'],
+          borderColor: ['#f87171', '#60a5fa', '#4ade80'],
+          borderWidth: 2,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            min: 93,
+            max: 100,
+            ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          },
+          x: {
+            ticks: { color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          }
+        }
+      }
+    });
+
+    // 5.4 工序分布 (饼图)
+    new Chart(document.getElementById('stationChart').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: stationLabels,
+        datasets: [{ data: stationValues, backgroundColor: ['#60a5fa', '#4ade80', '#fb923c', '#f87171', '#a78bfa'], borderWidth: 1,
+          borderColor: '#0f1729' }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 12, font: { size: 9 }, color: '#c8d0dc' } }
+        }
+      }
+    });
+
+    // 5.5 失效模式 (横向条形图)
+    new Chart(document.getElementById('defectChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: defectLabels,
+        datasets: [{
+          label: '不良数量',
+          data: defectValues,
+          backgroundColor: ['#f8717177', '#fb923c77', '#facc1577', '#60a5fa77', '#a78bfa77', '#34d39977', '#f472b677'],
+          borderColor: ['#f87171', '#fb923c', '#facc15', '#60a5fa', '#a78bfa', '#34d399', '#f472b6'],
+          borderWidth: 2,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          },
+          y: {
+            ticks: { color: '#7a8599', font: { size: 9 } },
+            grid: { color: 'rgba(30,45,74,0.5)' }
+          }
+        }
+      }
+    });
+
+    // ================================================================
+    // 6. 右侧内容: 月度明细(滚动) + AI建议(静态)
+    // ================================================================
+
+    // 6.1 月度明细滚动
+    const monthTrack = document.getElementById('monthTrack');
+
+    function buildMonthItems() {
+      return months.map((m, i) => {
+        const y = monthlyYield[i] * 100;
+        const status = y >= 98 ? '达标' : '未达标';
+        const cls = y >= 98 ? 'green' : 'red';
+        return `<div class="month-item">
+          <span class="m-label">${m}</span>
+          <span class="m-value">${y.toFixed(2)}%</span>
+          <span class="m-status"><span class="mini-tag ${cls}">${status}</span></span>
+        </div>`;
+      });
+    }
+    const monthItems = buildMonthItems();
+    monthTrack.innerHTML = [...monthItems, ...monthItems].join('');
+
+    // 6.2 AI建议 (基于7月数据)
+    const aiStatic = document.getElementById('aiStatic');
+
+    // 找出TOP不良工序
+    const stationTotal = {};
+    for (const s of stationLabels) {
+      stationTotal[s] = 0;
+      for (const p of prodNames) stationTotal[s] += stationData[s][p];
+    }
+    const sortedStations = Object.entries(stationTotal).sort((a, b) => b[1] - a[1]);
+
+    const suggestions = sortedStations.map(([label, count]) => {
+      let advice = '';
+      if (label === '电检') advice = `不良${count}件，建议优化测试治具及参数校准`;
+      else if (label === '装配') advice = `不良${count}件，建议加强定位工装及操作培训`;
+      else if (label === '拍照') advice = `不良${count}件，建议增加视觉防错及光源校准`;
+      else if (label === 'GP12') advice = `不良${count}件，建议加强外观检验标准及抽检频次`;
+      else if (label === '气检') advice = `不良${count}件，需检漏参数复测及气密性验证`;
+      else advice = `不良${count}件，建议排查并改进`;
+      return { label, advice };
+    });
+
+    aiStatic.innerHTML = suggestions.map(s =>
+      `<div class="ai-item"><strong>${s.label}</strong> ${s.advice}</div>`
+    ).join('');
+  </script>
 </body>
 </html>
