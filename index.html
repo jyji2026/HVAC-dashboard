@@ -337,7 +337,7 @@
         </div>
         <div class="stat-item">
           <span class="stat-label">🎯 目标</span>
-          <span class="stat-value cyan">97.5%</span>
+          <span class="stat-value cyan">98%</span>
         </div>
       </div>
       <div class="datetime" id="datetime"></div>
@@ -521,8 +521,8 @@
           pointBorderWidth: 2,
           pointRadius: 4,
         }, {
-          label: '目标 97.5%',
-          data: months.map(() => 97.5),
+          label: '目标 98%',
+          data: months.map(() =>98),
           borderColor: '#f87171',
           borderDash: [6, 4],
           borderWidth: 2,
@@ -666,8 +666,8 @@
     const miniBody = document.getElementById('miniMonthlyBody');
     for (let i = 0; i < months.length; i++) {
       const y = monthlyYield[i] * 100;
-      const status = y >= 97.5 ? '达标' : '未达标';
-      const cls = y >= 97.5 ? 'green' : 'red';
+      const status = y >= 98 ? '达标' : '未达标';
+      const cls = y >= 98 ? 'green' : 'red';
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${months[i]}</td><td>${y.toFixed(2)}%</td><td><span class="tag ${cls}">${status}</span></td>`;
       miniBody.appendChild(tr);
