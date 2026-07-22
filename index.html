@@ -1,1506 +1,679 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空调箱 RTY 质量看板 · 自动滚屏</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif;
-        }
-        body {
-            background: #0b1424;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HVAC车间 · 月度看板</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+  </script>
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #0f1535;
+      --bg-card: #111832;
+      --border-color: #1e2d4a;
+      --text-primary: #e8ecf4;
+      --text-secondary: #7a8599;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+    }
 
-        /* ===== 外层遮罩 ===== */
-        .viewport {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            background: #0b1424;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* ===== 滚动容器 ===== */
-        .scroll-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            will-change: transform;
-            animation: scrollUp 120s linear infinite;
-            padding: 20px 0;
-        }
+    body {
+      font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      padding: 12px;
+    }
 
-        /* 鼠标悬停暂停 */
-        .scroll-wrapper:hover {
-            animation-play-state: paused;
-        }
+    .dashboard {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    }
 
-        /* ===== 滚动动画 ===== */
-        @keyframes scrollUp {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-50%);
-            }
-        }
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      position: relative;
+      flex-shrink: 0;
+      height: 64px;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-blue), transparent);
+    }
+    .header-title h1 {
+      font-size: clamp(20px, 2.2vw, 30px);
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 3px;
+    }
+    .header-stats {
+      display: flex;
+      gap: clamp(20px, 2.5vw, 40px);
+      align-items: center;
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .stat-value {
+      font-size: clamp(18px, 1.8vw, 26px);
+      font-weight: 700;
+    }
+    .stat-value.blue {
+      color: var(--accent-blue);
+    }
+    .stat-value.green {
+      color: var(--accent-green);
+    }
+    .stat-value.red {
+      color: var(--accent-red);
+    }
+    .stat-value.cyan {
+      color: var(--accent-cyan);
+    }
+    .datetime {
+      font-size: clamp(12px, 1vw, 15px);
+      color: var(--text-secondary);
+      min-width: 160px;
+      text-align: right;
+    }
 
-        /* ===== 看板主体 ===== */
-        .dashboard {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(245, 248, 252, 0.92);
-            backdrop-filter: blur(12px);
-            border-radius: 28px;
-            padding: 20px 24px 24px;
-            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            width: 96%;
-        }
+    /* Main Grid */
+    .row-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr 1fr;
+      gap: 10px;
+      min-height: 0;
+    }
+    .row-bottom {
+      flex: 0.8;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      min-height: 0;
+    }
 
-        /* 内容容器 - 两份完全相同，实现无缝循环 */
-        .scroll-content {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+    /* Panel */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 6px 14px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .panel-header::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue));
+      border-radius: 2px;
+    }
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .panel-body {
+      flex: 1;
+      padding: 8px;
+      overflow: hidden;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
 
-        .scroll-content + .scroll-content {
-            margin-top: 12px;
-        }
+    /* Tables inside panels */
+    .table-wrap {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 4px;
+    }
+    .table-wrap::-webkit-scrollbar {
+      width: 3px;
+    }
+    .table-wrap::-webkit-scrollbar-track {
+      background: rgba(30, 45, 74, 0.3);
+    }
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: var(--accent-cyan);
+      border-radius: 3px;
+    }
 
-        /* ===== 头部 ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #0033a0, #1a5bc7);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 8px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 20px rgba(0, 51, 160, 0.3);
-        }
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: 0.5px;
-        }
-        .header h1 small {
-            font-size: 14px;
-            font-weight: 400;
-            opacity: 0.85;
-        }
-        .header .tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .header .tags span {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 500;
-            backdrop-filter: blur(4px);
-        }
-        .header .tags span.highlight {
-            background: #ffd966;
-            color: #0033a0;
-            font-weight: 700;
-        }
-        .header .tags span.highlight2 {
-            background: #ede9fe;
-            color: #7c3aed;
-        }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    table.data-table thead th {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent-blue);
+      font-weight: 600;
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    table.data-table tbody td {
+      padding: 5px 10px;
+      border-bottom: 1px solid rgba(30, 45, 74, 0.4);
+      color: var(--text-primary);
+    }
+    table.data-table tbody tr:hover td {
+      background: rgba(59, 130, 246, 0.08);
+    }
+    .tag {
+      display: inline-block;
+      padding: 1px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .tag.green {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+    }
+    .tag.red {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+    }
+    .tag.orange {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-yellow);
+    }
 
-        /* ===== 卡片 ===== */
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(4px);
-            border-radius: 14px;
-            padding: 14px 18px 16px;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-            border-top: 4px solid #0033a0;
-            transition: transform 0.2s;
-        }
-        .card:hover {
-            transform: scale(1.002);
-        }
-        .card .card-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a2a4a;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .card .card-title .badge {
-            font-size: 10px;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        .badge-red {
-            background: #fce8e6;
-            color: #d93025;
-        }
-        .badge-green {
-            background: #e6f4ea;
-            color: #1e8e3e;
-        }
-        .badge-yellow {
-            background: #fef7e0;
-            color: #f9ab00;
-        }
-        .badge-blue {
-            background: #e8f0fe;
-            color: #0033a0;
-        }
-        .badge-gray {
-            background: #f0f2f5;
-            color: #4a5a72;
-        }
-        .badge-purple {
-            background: #f3e8ff;
-            color: #7c3aed;
-        }
+    /* AI suggestions - 自动滚动无缝循环 */
+    .suggestion-scroll {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      margin-top: 4px;
+      border-radius: 6px;
+      background: rgba(17, 24, 50, 0.3);
+      border: 1px solid var(--border-color);
+    }
+    .suggestion-track {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 10px;
+      animation: scrollSuggest 14s linear infinite;
+    }
+    .suggestion-item {
+      background: rgba(17, 24, 50, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+    .suggestion-item strong {
+      color: var(--accent-cyan);
+    }
 
-        .chart-container {
-            position: relative;
-            height: 190px;
-        }
-        .chart-container.tall {
-            height: 220px;
-        }
-        .chart-container.short {
-            height: 120px;
-        }
+    @keyframes scrollSuggest {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+    /* 鼠标悬停暂停滚动 */
+    .suggestion-scroll:hover .suggestion-track {
+      animation-play-state: paused;
+    }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .grid-4 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .full-width {
-            grid-column: 1 / -1;
-        }
+    .scroll-hint {
+      display: none;
+    }
 
-        /* ===== KPI卡片 ===== */
-        .kpi-item {
-            flex: 1;
-            min-width: 60px;
-            background: #f8faff;
-            border-radius: 10px;
-            padding: 8px 10px;
-            text-align: center;
-            border: 1px solid #e9edf4;
-        }
-        .kpi-item .num {
-            font-size: 26px;
-            font-weight: 700;
-            color: #0b1a2f;
-        }
-        .kpi-item .num.red {
-            color: #d93025;
-        }
-        .kpi-item .num.green {
-            color: #1e8e3e;
-        }
-        .kpi-item .num.yellow {
-            color: #f9ab00;
-        }
-        .kpi-item .num.blue {
-            color: #0033a0;
-        }
-        .kpi-item .label {
-            font-size: 10px;
-            color: #6b7a8f;
-            margin-top: 1px;
-        }
-
-        /* ===== 柏拉图 ===== */
-        .pareto-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .pareto-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 3px 5px;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-        .pareto-row:hover {
-            background: #f0f4fe;
-        }
-        .pareto-row .p-label {
-            width: 56px;
-            font-weight: 500;
-            color: #1a2a4a;
-            flex-shrink: 0;
-            font-size: 12px;
-        }
-        .pareto-row .p-bar-bg {
-            flex: 1;
-            height: 18px;
-            background: #e9edf4;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .pareto-row .p-bar {
-            height: 100%;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 5px;
-            font-size: 10px;
-            font-weight: 600;
-            color: white;
-        }
-        .pareto-row .p-val {
-            width: 36px;
-            text-align: right;
-            font-weight: 600;
-            color: #1a2a4a;
-            flex-shrink: 0;
-            font-size: 12px;
-        }
-        .pareto-row .p-pct {
-            width: 32px;
-            text-align: right;
-            font-size: 11px;
-            color: #6b7a8f;
-            flex-shrink: 0;
-        }
-
-        /* ===== 建议项 ===== */
-        .suggestion-item {
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            border-left: 4px solid;
-            font-size: 12px;
-            background: #fafcff;
-        }
-        .suggestion-item .s-title {
-            font-weight: 700;
-            font-size: 13px;
-        }
-        .suggestion-item .s-desc {
-            color: #2a3a5a;
-            margin-top: 1px;
-            font-size: 12px;
-        }
-        .suggestion-item .s-action {
-            color: #4a5a72;
-            font-size: 11px;
-            margin-top: 2px;
-        }
-        .priority-p0 {
-            border-left-color: #d93025;
-            background: #fef6f5;
-        }
-        .priority-p1 {
-            border-left-color: #f9ab00;
-            background: #fef9ed;
-        }
-        .priority-p2 {
-            border-left-color: #f9ab00;
-            background: #fef9ed;
-        }
-        .priority-p3 {
-            border-left-color: #1e8e3e;
-            background: #ecf7ec;
-        }
-
-        /* ===== AI建议 ===== */
-        .ai-suggestion-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .ai-item {
-            background: #f8faff;
-            border-radius: 10px;
-            padding: 10px 14px;
-            border-left: 4px solid #7c3aed;
-            transition: background 0.2s;
-        }
-        .ai-item:hover {
-            background: #f0f4fe;
-        }
-        .ai-item .ai-tag {
-            font-size: 9px;
-            font-weight: 700;
-            color: #7c3aed;
-            background: #ede9fe;
-            padding: 2px 8px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 3px;
-            letter-spacing: 0.3px;
-        }
-        .ai-item .ai-title {
-            font-weight: 700;
-            font-size: 13px;
-            color: #1a2a4a;
-        }
-        .ai-item .ai-desc {
-            font-size: 11px;
-            color: #4a5a72;
-            margin-top: 2px;
-            line-height: 1.4;
-        }
-        .ai-item .ai-impact {
-            font-size: 11px;
-            color: #0033a0;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-        .ai-item .ai-impact span {
-            background: #e8f0fe;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-        .ai-item .ai-confidence {
-            display: inline-block;
-            font-size: 10px;
-            color: #6b7a8f;
-            margin-left: 6px;
-        }
-
-        .card-tclient {
-            border-top-color: #0033a0;
-        }
-        .card-w04 {
-            border-top-color: #f9ab00;
-        }
-        .card-d01 {
-            border-top-color: #d93025;
-        }
-
-        /* ===== 对比卡片 ===== */
-        .compare-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-        .compare-card {
-            background: #f8faff;
-            border-radius: 10px;
-            padding: 8px 12px;
-            text-align: center;
-            border: 1px solid #e9edf4;
-        }
-        .compare-card .big-num {
-            font-size: 24px;
-            font-weight: 700;
-        }
-        .compare-card .small-label {
-            font-size: 11px;
-            color: #6b7a8f;
-        }
-        .compare-card .change-badge {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 10px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-top: 2px;
-        }
-        .change-up {
-            color: #d93025;
-            background: #fce8e6;
-        }
-        .change-down {
-            color: #1e8e3e;
-            background: #e6f4ea;
-        }
-
-        .highlight-box {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #2a3a5a;
-            background: #fef6f5;
-            border-left: 4px solid #d93025;
-        }
-        .highlight-box.green {
-            background: #ecf7ec;
-            border-left-color: #1e8e3e;
-        }
-        .highlight-box.yellow {
-            background: #fef9ed;
-            border-left-color: #f9ab00;
-        }
-
-        .chart-legend {
-            display: flex;
-            gap: 14px;
-            font-size: 11px;
-            color: #4a5a72;
-            margin-top: 4px;
-            flex-wrap: wrap;
-        }
-        .chart-legend .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .chart-legend .legend-color {
-            width: 18px;
-            height: 3px;
-            border-radius: 4px;
-        }
-
-        .footer {
-            background: rgba(234, 240, 250, 0.8);
-            border-radius: 10px;
-            padding: 8px 18px;
-            font-size: 12px;
-            color: #1f3a6b;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-            backdrop-filter: blur(4px);
-        }
-        .footer strong {
-            color: #0033a0;
-        }
-
-        /* ===== 顶部状态栏 ===== */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 20px 10px 20px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 96%;
-        }
-        .status-bar .scroll-hint {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .status-bar .scroll-hint .pulse {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #4ade80;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.4;
-                transform: scale(0.8);
-            }
-        }
-        .status-bar .controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        .status-bar .controls button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.8);
-            padding: 4px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-            backdrop-filter: blur(4px);
-        }
-        .status-bar .controls button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        .status-bar .controls button.active {
-            background: #ffd966;
-            color: #0033a0;
-            border-color: #ffd966;
-        }
-
-        /* ===== 滚动条隐藏 ===== */
-        ::-webkit-scrollbar {
-            width: 0;
-            height: 0;
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 1100px) {
-            .grid-4 {
-                grid-template-columns: 1fr 1fr;
-            }
-            .grid-3 {
-                grid-template-columns: 1fr 1fr;
-            }
-            .ai-suggestion-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .compare-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            .grid-4 {
-                grid-template-columns: 1fr 1fr;
-            }
-            .header h1 {
-                font-size: 16px;
-            }
-            .header .tags span {
-                font-size: 10px;
-                padding: 2px 10px;
-            }
-            .dashboard {
-                padding: 12px;
-                width: 98%;
-            }
-            .ai-suggestion-grid {
-                grid-template-columns: 1fr;
-            }
-            .compare-grid {
-                grid-template-columns: 1fr;
-            }
-            .status-bar {
-                font-size: 10px;
-                padding: 4px 12px 6px 12px;
-                flex-wrap: wrap;
-                gap: 4px;
-            }
-            .status-bar .controls button {
-                font-size: 10px;
-                padding: 2px 10px;
-            }
-            .card {
-                padding: 10px 12px 12px;
-            }
-            .chart-container {
-                height: 150px;
-            }
-            .chart-container.tall {
-                height: 180px;
-            }
-        }
-        @media (max-width: 480px) {
-            .grid-4 {
-                grid-template-columns: 1fr;
-            }
-            .pareto-row .p-label {
-                width: 40px;
-                font-size: 10px;
-            }
-            .kpi-item .num {
-                font-size: 20px;
-            }
-        }
-    </style>
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .row-main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
+      .row-main .panel:last-child {
+        grid-column: span 2;
+      }
+      .row-bottom {
+        grid-template-columns: 1fr 1fr;
+      }
+      .row-bottom .panel:last-child {
+        grid-column: span 2;
+      }
+    }
+    @media (max-width: 768px) {
+      .row-main,
+      .row-bottom {
+        grid-template-columns: 1fr;
+      }
+      .row-main .panel:last-child,
+      .row-bottom .panel:last-child {
+        grid-column: span 1;
+      }
+      .header {
+        flex-wrap: wrap;
+        height: auto;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+      .header-stats {
+        gap: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <!-- ===== 视口 ===== -->
-    <div class="viewport">
-
-        <!-- ===== 顶部状态栏 ===== -->
-        <div class="status-bar">
-            <div class="scroll-hint">
-                <span class="pulse"></span>
-                <span>自动滚屏中 · 悬停暂停</span>
-            </div>
-            <div class="controls">
-                <button id="toggleBtn" class="active">⏸ 暂停</button>
-                <button id="speedBtn">🐢 速度</button>
-                <span id="speedLabel" style="font-size:11px;opacity:0.7;">120s</span>
-            </div>
+  <div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-title"><h1>HVAC车间 · 月度看板</h1></div>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-label">📆 7月累计不良</span>
+          <span class="stat-value red" id="kpiBad">--</span>
         </div>
+        <div class="stat-item">
+          <span class="stat-label">📦 7月累计产量</span>
+          <span class="stat-value blue" id="kpiOutput">--</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">📊 7月良品率</span>
+          <span class="stat-value green" id="kpiYield">--</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">🎯 目标</span>
+          <span class="stat-value cyan">97.5%</span>
+        </div>
+      </div>
+      <div class="datetime" id="datetime"></div>
+    </div>
 
-        <!-- ===== 滚动容器 ===== -->
-        <div class="scroll-wrapper" id="scrollWrapper">
+    <!-- Row 2: 3 columns -->
+    <div class="row-main">
+      <!-- Left: 月度良品率趋势 -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">📈 月度良品率趋势 (1–7月)</span></div>
+        <div class="panel-body"><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+      </div>
 
-            <!-- ===== 第1份内容 ===== -->
-            <div class="dashboard">
-                <div class="scroll-content">
+      <!-- Center: 各产品月度良品率对比 -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">📊 各产品月度良品率对比</span></div>
+        <div class="panel-body"><div class="chart-container"><canvas id="productTrendChart"></canvas></div></div>
+      </div>
 
-                    <!-- 头部 -->
-                    <div class="header">
-                        <h1>❄️ 空调箱 RTY 质量看板 <small>2026年 1-7月</small></h1>
-                        <div class="tags">
-                            <span>📊 T客户 · W04 · D01</span>
-                            <span class="highlight">📈 7月RTY 99.10% ▲ 0.28%</span>
-                            <span class="highlight2">🤖 AI 4项建议</span>
-                        </div>
-                    </div>
+      <!-- Right: 7月各产品炉前良品率 -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">🏭 7月各产品良品率 (炉前)</span></div>
+        <div class="panel-body"><div class="chart-container"><canvas id="julyProductChart"></canvas></div></div>
+      </div>
+    </div>
 
-                    <!-- KPI -->
-                    <div class="grid-4" id="kpiCards"></div>
+    <!-- Row 3: 3 columns -->
+    <div class="row-bottom">
+      <!-- Left: 工段不良分布 (按工序整合) -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">🧩 7月不良 · 工序分布</span></div>
+        <div class="panel-body"><div class="chart-container"><canvas id="stationChart"></canvas></div></div>
+      </div>
 
-                    <!-- 6月 vs 7月 核心对比 -->
-                    <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%); padding:12px 16px 14px;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:6px;">
-                            📊 6月 vs 7月 核心对比
-                            <span class="badge badge-purple">重点分析</span>
-                            <span style="font-size:11px;color:#6b7a8f;font-weight:400;">⚠️ 7月产量为部分统计（约6月的28%）</span>
-                        </div>
-                        <div class="compare-grid" id="compareGrid"></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
-                            <div class="highlight-box">
-                                <strong>✅ 改善亮点：</strong> W04装配 178→0，电检全面下降
-                            </div>
-                            <div class="highlight-box yellow">
-                                <strong>⚠️ 关注风险：</strong> D01装配 8→24（▲200%）
-                            </div>
-                        </div>
-                    </div>
+      <!-- Center: TOP失效模式 (按工序汇总) -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">⚠️ TOP失效模式 (7月)</span></div>
+        <div class="panel-body"><div class="chart-container"><canvas id="defectChart"></canvas></div></div>
+      </div>
 
-                    <!-- 综合RTY + 产量趋势 -->
-                    <div class="card full-width" style="padding:12px 16px 14px;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:6px;">📈 1-7月 综合RTY & 产量趋势 <span class="badge badge-blue">含7月</span></div>
-                        <div class="chart-container tall" style="height:180px;"><canvas id="chartCombined"></canvas></div>
-                        <div style="margin-top:4px;font-size:11px;color:#4a5a72;background:#f8faff;padding:4px 12px;border-radius:6px;display:flex;justify-content:space-between;flex-wrap:wrap;" id="chartSummaryStats"></div>
-                    </div>
-
-                    <!-- 6月 vs 7月 工序对比 + 不良趋势 -->
-                    <div class="grid-2" style="margin-bottom:12px;">
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">📊 6月 vs 7月 工序不良 <span class="badge badge-red">环比</span></div>
-                            <div class="chart-container tall" style="height:170px;"><canvas id="chartCompare"></canvas></div>
-                            <div style="margin-top:4px;font-size:11px;background:#fef6f5;padding:4px 10px;border-radius:6px;" id="compareAnnotation"></div>
-                        </div>
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">📈 月度不良趋势 (1-7月) <span class="badge badge-blue">含累积</span></div>
-                            <div class="chart-container tall" style="height:170px;"><canvas id="chartTrend"></canvas></div>
-                            <div class="chart-legend" style="font-size:10px;">
-                                <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 月度不良</span>
-                                <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 累积不良 (右轴)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 柏拉图 + 改善优先级 -->
-                    <div class="grid-2" style="margin-bottom:12px;">
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">🎯 7月不良柏拉图 <span class="badge badge-red">80/20</span></div>
-                            <div class="pareto-list" id="paretoList"></div>
-                            <div style="margin-top:4px;font-size:11px;color:#4a5a72;background:#fef6f5;padding:4px 10px;border-radius:6px;" id="paretoAnnotation"></div>
-                        </div>
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">⚡ 改善优先级 <span class="badge badge-blue">7月行动</span></div>
-                            <div id="priorityList"></div>
-                        </div>
-                    </div>
-
-                    <!-- AI 智能建议 -->
-                    <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%); padding:12px 16px 14px; margin-bottom:12px;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:6px;">
-                            🤖 AI 智能建议
-                            <span class="badge badge-purple">基于6→7月变化</span>
-                            <span style="font-size:11px;color:#6b7a8f;font-weight:400;margin-left:4px;">· 4项洞察</span>
-                        </div>
-                        <div class="ai-suggestion-grid" id="aiSuggestions"></div>
-                    </div>
-
-                    <!-- 三大产线7月分析 -->
-                    <div class="grid-3" id="productLines" style="margin-bottom:12px;"></div>
-
-                    <!-- 变化详情 + 8月目标 -->
-                    <div class="grid-2" style="margin-bottom:0;">
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">📊 6月 vs 7月 分工序变化 <span class="badge badge-red">环比</span></div>
-                            <div id="changeDetailGrid" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:4px; font-size:12px;"></div>
-                            <div style="margin-top:4px;font-size:11px;color:#4a5a72;background:#fef6f5;padding:4px 10px;border-radius:6px;">
-                                ⚠️ <strong>装配</strong> 是唯一恶化工序（D01），其他均大幅改善
-                            </div>
-                        </div>
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">🎯 8月改善目标 <span class="badge badge-blue">行动路线</span></div>
-                            <div id="targetList"></div>
-                        </div>
-                    </div>
-
-                    <!-- 页脚 -->
-                    <div class="footer">
-                        <span>📊 数据基于 2026年1-7月 · T客户 / W04 / D01</span>
-                        <span><strong>✅</strong> 7月综合 RTY <span id="footerRTY">--</span> · 不良 <span id="footerBad">--</span></span>
-                    </div>
-
-                </div>
+      <!-- Right: 数据明细 + AI建议整合 (自动滚动无缝循环) -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">📋 月度明细 & AI建议</span></div>
+        <div class="panel-body" style="padding:4px 8px 8px 8px;">
+          <div style="flex:1; display:flex; flex-direction: column; gap:4px; min-height:0;">
+            <!-- 小表格：月度良品率摘要 -->
+            <div style="flex:0 0 auto; max-height:100px; overflow-y:auto;" class="table-wrap">
+              <table class="data-table" id="miniMonthlyTable">
+                <thead><tr><th>月份</th><th>良品率</th><th>状态</th></tr></thead>
+                <tbody id="miniMonthlyBody"></tbody>
+              </table>
             </div>
-
-            <!-- ===== 第2份内容（完全克隆，实现无缝循环） ===== -->
-            <div class="dashboard">
-                <div class="scroll-content">
-
-                    <div class="header">
-                        <h1>❄️ 空调箱 RTY 质量看板 <small>2026年 1-7月</small></h1>
-                        <div class="tags">
-                            <span>📊 T客户 · W04 · D01</span>
-                            <span class="highlight">📈 7月RTY 99.10% ▲ 0.28%</span>
-                            <span class="highlight2">🤖 AI 4项建议</span>
-                        </div>
-                    </div>
-
-                    <div class="grid-4" id="kpiCards_clone"></div>
-
-                    <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%); padding:12px 16px 14px;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:6px;">
-                            📊 6月 vs 7月 核心对比
-                            <span class="badge badge-purple">重点分析</span>
-                            <span style="font-size:11px;color:#6b7a8f;font-weight:400;">⚠️ 7月产量为部分统计（约6月的28%）</span>
-                        </div>
-                        <div class="compare-grid" id="compareGrid_clone"></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
-                            <div class="highlight-box">
-                                <strong>✅ 改善亮点：</strong> W04装配 178→0，电检全面下降
-                            </div>
-                            <div class="highlight-box yellow">
-                                <strong>⚠️ 关注风险：</strong> D01装配 8→24（▲200%）
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card full-width" style="padding:12px 16px 14px;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:6px;">📈 1-7月 综合RTY & 产量趋势 <span class="badge badge-blue">含7月</span></div>
-                        <div class="chart-container tall" style="height:180px;"><canvas id="chartCombined_clone"></canvas></div>
-                        <div style="margin-top:4px;font-size:11px;color:#4a5a72;background:#f8faff;padding:4px 12px;border-radius:6px;display:flex;justify-content:space-between;flex-wrap:wrap;" id="chartSummaryStats_clone"></div>
-                    </div>
-
-                    <div class="grid-2" style="margin-bottom:12px;">
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">📊 6月 vs 7月 工序不良 <span class="badge badge-red">环比</span></div>
-                            <div class="chart-container tall" style="height:170px;"><canvas id="chartCompare_clone"></canvas></div>
-                            <div style="margin-top:4px;font-size:11px;background:#fef6f5;padding:4px 10px;border-radius:6px;" id="compareAnnotation_clone"></div>
-                        </div>
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">📈 月度不良趋势 (1-7月) <span class="badge badge-blue">含累积</span></div>
-                            <div class="chart-container tall" style="height:170px;"><canvas id="chartTrend_clone"></canvas></div>
-                            <div class="chart-legend" style="font-size:10px;">
-                                <span class="legend-item"><span class="legend-color" style="background:#d93025;"></span> 月度不良</span>
-                                <span class="legend-item"><span class="legend-color" style="background:#0033a0;"></span> 累积不良 (右轴)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid-2" style="margin-bottom:12px;">
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">🎯 7月不良柏拉图 <span class="badge badge-red">80/20</span></div>
-                            <div class="pareto-list" id="paretoList_clone"></div>
-                            <div style="margin-top:4px;font-size:11px;color:#4a5a72;background:#fef6f5;padding:4px 10px;border-radius:6px;" id="paretoAnnotation_clone"></div>
-                        </div>
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">⚡ 改善优先级 <span class="badge badge-blue">7月行动</span></div>
-                            <div id="priorityList_clone"></div>
-                        </div>
-                    </div>
-
-                    <div class="card full-width" style="border-top-color:#7c3aed; background: linear-gradient(135deg, #faf8ff 0%, #f5f0ff 100%); padding:12px 16px 14px; margin-bottom:12px;">
-                        <div class="card-title" style="font-size:14px;margin-bottom:6px;">
-                            🤖 AI 智能建议
-                            <span class="badge badge-purple">基于6→7月变化</span>
-                            <span style="font-size:11px;color:#6b7a8f;font-weight:400;margin-left:4px;">· 4项洞察</span>
-                        </div>
-                        <div class="ai-suggestion-grid" id="aiSuggestions_clone"></div>
-                    </div>
-
-                    <div class="grid-3" id="productLines_clone" style="margin-bottom:12px;"></div>
-
-                    <div class="grid-2" style="margin-bottom:0;">
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">📊 6月 vs 7月 分工序变化 <span class="badge badge-red">环比</span></div>
-                            <div id="changeDetailGrid_clone" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:4px; font-size:12px;"></div>
-                            <div style="margin-top:4px;font-size:11px;color:#4a5a72;background:#fef6f5;padding:4px 10px;border-radius:6px;">
-                                ⚠️ <strong>装配</strong> 是唯一恶化工序（D01），其他均大幅改善
-                            </div>
-                        </div>
-                        <div class="card" style="padding:12px 16px 14px;">
-                            <div class="card-title" style="font-size:14px;margin-bottom:6px;">🎯 8月改善目标 <span class="badge badge-blue">行动路线</span></div>
-                            <div id="targetList_clone"></div>
-                        </div>
-                    </div>
-
-                    <div class="footer">
-                        <span>📊 数据基于 2026年1-7月 · T客户 / W04 / D01</span>
-                        <span><strong>✅</strong> 7月综合 RTY <span id="footerRTY_clone">--</span> · 不良 <span id="footerBad_clone">--</span></span>
-                    </div>
-
-                </div>
+            <!-- AI建议 自动滚动无缝循环 (移除了"得"字样) -->
+            <div class="suggestion-scroll">
+              <div class="suggestion-track" id="suggestionTrack">
+                <div class="suggestion-item"><strong>装配</strong> 7月不良67件，建议加强定位工装</div>
+                <div class="suggestion-item"><strong>气检/氦检</strong> 不良184件，需检漏参数复测</div>
+                <div class="suggestion-item"><strong>电检</strong> 不良235件，建议优化测试治具</div>
+                <div class="suggestion-item"><strong>GP12/拍照</strong> 合计85件，增加视觉防错</div>
+                <!-- 重复一组用于无缝滚动 -->
+                <div class="suggestion-item"><strong>装配</strong> 7月不良67件，建议加强定位工装</div>
+                <div class="suggestion-item"><strong>气检/氦检</strong> 不良184件，需检漏参数复测</div>
+                <div class="suggestion-item"><strong>电检</strong> 不良235件，建议优化测试治具</div>
+                <div class="suggestion-item"><strong>GP12/拍照</strong> 合计85件，增加视觉防错</div>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        </div><!-- /scroll-wrapper -->
+  <script>
+    // ================================================================
+    // 1. 核心数据 —— 完全基于Excel  (T客户 / W04 / D01)
+    // ================================================================
+    const rtyData = {
+      'T客户': [0.9918340480804916, 0.9971683873720136, 0.9970267211615074, 0.9869827374801955, 0.9861061841001132, 0.9925697390293058, 0.9996],
+      'W04':   [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9916],
+      'D01':   [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9863]
+    };
+    const prodNames = ['T客户', 'W04', 'D01'];
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
 
-    </div><!-- /viewport -->
+    const prodJuly = {
+      'T客户': { prod: 16987, rty: 0.9996 },
+      'W04':   { prod: 6676, rty: 0.9916 },
+      'D01':   { prod: 4960, rty: 0.9863 }
+    };
+    const julyGood = {};
+    const julyBad = {};
+    for (const p of prodNames) {
+      const good = Math.round(prodJuly[p].prod * prodJuly[p].rty);
+      const bad = prodJuly[p].prod - good;
+      julyGood[p] = good;
+      julyBad[p] = bad;
+    }
 
-    <script>
-        // ================================================================
-        // ===== 数据配置 =====
-        // ================================================================
+    // 7月各工序不良 (从7月sheet汇总)
+    const stationLabels = ['装配', '气检', '电检', '拍照', 'GP12'];
+    const stationValues = [31, 1, 235, 16, 17];
 
-        const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
+    const defectMap = {
+      '装配异常': 31,
+      '气密泄漏': 1,
+      '电检失效': 235,
+      '拍照识别异常': 16,
+      'GP12外观缺陷': 17
+    };
+    const defectLabels = Object.keys(defectMap);
+    const defectValues = Object.values(defectMap);
 
-        const RTY_DATA = [99.24, 99.72, 99.51, 97.51, 98.33, 98.67, 99.10];
-        const PROD_DATA = [56782, 41484, 77984, 68651, 63986, 62416, 17564];
-        const MONTHLY_BAD = [432, 114, 378, 1520, 962, 559, 158];
+    // ================================================================
+    // 2. 计算月度良品率 (三个产品平均)
+    // ================================================================
+    function avgRTY(monthIdx) {
+      let sum = 0;
+      for (const p of prodNames) {
+        sum += rtyData[p][monthIdx];
+      }
+      return sum / prodNames.length;
+    }
+    const monthlyYield = months.map((_, idx) => avgRTY(idx));
 
-        const LINE_NAMES = ['T客户', 'W04', 'D01'];
-        const LINE_RTY = [
-            [99.18, 99.72, 99.70, 98.70, 98.61, 99.37, 99.18],
-            [99.18, 99.73, 99.21, 97.97, 98.93, 97.89, 99.07],
-            [99.25, 99.52, 99.56, 96.27, 97.36, 98.60, 98.78]
-        ];
-        const LINE_COLORS = ['#0033a0', '#f9ab00', '#d93025'];
+    const prodYield = {};
+    for (const p of prodNames) {
+      prodYield[p] = rtyData[p].map(v => v * 100);
+    }
 
-        const LINE_BAD_DETAIL = [
-            { 装配: 0, 气检: 0, 电检: 75, 拍照: 0, GP12: 8 },
-            { 装配: 0, 气检: 0, 电检: 21, 拍照: 13, GP12: 2 },
-            { 装配: 24, 气检: 0, 电检: 12, 拍照: 0, GP12: 0 }
-        ];
-        const LINE_CUM_BAD = [1352, 1458, 1413];
-        const LINE_MONTH_BAD = [83, 36, 36];
-        const LINE_RTY_CHANGE = [-0.19, +1.18, +0.18];
+    // ================================================================
+    // 3. 渲染 KPI (7月综合)
+    // ================================================================
+    const totalProd = prodJuly['T客户'].prod + prodJuly['W04'].prod + prodJuly['D01'].prod;
+    const totalGood = julyGood['T客户'] + julyGood['W04'] + julyGood['D01'];
+    const totalBad = totalProd - totalGood;
+    const yield7 = totalGood / totalProd;
+    document.getElementById('kpiBad').textContent = totalBad.toLocaleString();
+    document.getElementById('kpiOutput').textContent = totalProd.toLocaleString();
+    document.getElementById('kpiYield').textContent = (yield7 * 100).toFixed(2) + '%';
 
-        const PROC_CURRENT = { 电检: 108, 气检: 0, 拍照: 13, 装配: 24, GP12: 10 };
-        const PROC_PREV = { 电检: 279, 气检: 45, 拍照: 31, 装配: 180, GP12: 24 };
+    // ================================================================
+    // 4. 时间
+    // ================================================================
+    function updateDateTime() {
+      const now = new Date();
+      const text = now.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      document.getElementById('datetime').textContent = text;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
 
-        const PARETO_DATA = [
-            { label: '电检', value: 108, color: '#d93025' },
-            { label: '装配', value: 24, color: '#f9ab00' },
-            { label: '拍照', value: 13, color: '#0033a0' },
-            { label: 'GP12', value: 10, color: '#4a5a72' },
-            { label: '气检', value: 0, color: '#6b7a8f' }
-        ];
+    // ================================================================
+    // 5. 图表渲染 (深色主题)
+    // ================================================================
+    Chart.defaults.color = '#c8d0dc';
+    Chart.defaults.borderColor = '#1a2540';
 
-        // ================================================================
-        // ===== 工具函数 =====
-        // ================================================================
-
-        const totalMonths = MONTHS.length;
-        const lastIdx = totalMonths - 1;
-        const prevIdx = lastIdx - 1;
-
-        function sum(arr) { return arr.reduce((a, b) => a + b, 0); }
-
-        function avg(arr) { return sum(arr) / arr.length; }
-
-        function max(arr) { return Math.max(...arr); }
-
-        function min(arr) { return Math.min(...arr); }
-
-        function formatPct(v) { return v.toFixed(2) + '%'; }
-
-        function formatNum(v) { return v.toLocaleString(); }
-
-        const CUM_BAD = MONTHLY_BAD.reduce((acc, val, i) => {
-            acc.push((acc[i - 1] || 0) + val);
-            return acc;
-        }, []);
-
-        // ================================================================
-        // ===== 渲染函数（支持带后缀的克隆版本） =====
-        // ================================================================
-
-        function renderKPI(suffix = '') {
-            const lastRTY = RTY_DATA[lastIdx];
-            const prevRTY = RTY_DATA[prevIdx];
-            const rtyChange = lastRTY - prevRTY;
-            const totalProd = sum(PROD_DATA);
-            const totalBad = CUM_BAD[lastIdx];
-            const lastBad = MONTHLY_BAD[lastIdx];
-            const prevBad = MONTHLY_BAD[prevIdx];
-            const badChange = lastBad - prevBad;
-            const badChangePct = prevBad !== 0 ? ((badChange / prevBad) * 100) : 0;
-
-            let minLineIdx = 0,
-                minRTY = Infinity;
-            LINE_RTY.forEach((rtyArr, idx) => {
-                const val = rtyArr[lastIdx];
-                if (val < minRTY) { minRTY = val;
-                    minLineIdx = idx; }
-            });
-
-            const container = document.getElementById('kpiCards' + suffix);
-            if (!container) return;
-            container.innerHTML = `
-                <div class="card" style="border-top-color:#0033a0;padding:8px 12px;">
-                    <div class="card-title" style="font-size:11px;margin-bottom:1px;">📊 7月综合RTY</div>
-                    <div style="font-size:28px;font-weight:700;color:#0033a0;">${formatPct(lastRTY)}</div>
-                    <div style="font-size:11px;color:#4a5a72;">
-                        <span style="color:${rtyChange >= 0 ? '#1e8e3e' : '#d93025'};">${rtyChange >= 0 ? '▲' : '▼'} ${Math.abs(rtyChange).toFixed(2)}%</span> vs 6月
-                    </div>
-                </div>
-                <div class="card" style="border-top-color:#1e8e3e;padding:8px 12px;">
-                    <div class="card-title" style="font-size:11px;margin-bottom:1px;">📦 累计产量</div>
-                    <div style="font-size:28px;font-weight:700;color:#1e8e3e;">${formatNum(totalProd)}</div>
-                    <div style="font-size:11px;color:#4a5a72;">累计不良 <strong style="color:#d93025;">${formatNum(totalBad)}</strong></div>
-                </div>
-                <div class="card" style="border-top-color:#f9ab00;padding:8px 12px;">
-                    <div class="card-title" style="font-size:11px;margin-bottom:1px;">📈 7月不良</div>
-                    <div style="font-size:28px;font-weight:700;color:#f9ab00;">${formatNum(lastBad)}</div>
-                    <div style="font-size:11px;color:#4a5a72;">
-                        <span style="color:${badChange <= 0 ? '#1e8e3e' : '#d93025'};">${badChange <= 0 ? '▼' : '▲'} ${Math.abs(badChange)}件</span>
-                    </div>
-                </div>
-                <div class="card" style="border-top-color:#d93025;padding:8px 12px;">
-                    <div class="card-title" style="font-size:11px;margin-bottom:1px;">🔧 最大短板</div>
-                    <div style="font-size:28px;font-weight:700;color:#d93025;">${formatPct(minRTY)}</div>
-                    <div style="font-size:11px;color:#4a5a72;">${LINE_NAMES[minLineIdx]}</div>
-                </div>
-            `;
-            if (!suffix) {
-                document.getElementById('footerRTY').textContent = formatPct(lastRTY);
-                document.getElementById('footerBad').textContent = formatNum(lastBad);
-            } else {
-                const el1 = document.getElementById('footerRTY' + suffix);
-                const el2 = document.getElementById('footerBad' + suffix);
-                if (el1) el1.textContent = formatPct(lastRTY);
-                if (el2) el2.textContent = formatNum(lastBad);
-            }
+    // 5.1 月度趋势
+    const ctx1 = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{
+          label: '综合良品率',
+          data: monthlyYield.map(v => +(v * 100).toFixed(2)),
+          borderColor: '#60a5fa',
+          backgroundColor: 'rgba(96,165,250,0.08)',
+          fill: true,
+          tension: 0.25,
+          pointBackgroundColor: '#60a5fa',
+          pointBorderColor: '#0f1729',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+        }, {
+          label: '目标 97.5%',
+          data: months.map(() => 97.5),
+          borderColor: '#f87171',
+          borderDash: [6, 4],
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 12, font: { size: 10 } } },
+          tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: { min: 95.5, max: 100, ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' } },
+          x: { ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
         }
+      }
+    });
 
-        function renderCompare(suffix = '') {
-            const lastRTY = RTY_DATA[lastIdx];
-            const prevRTY = RTY_DATA[prevIdx];
-            const lastBad = MONTHLY_BAD[lastIdx];
-            const prevBad = MONTHLY_BAD[prevIdx];
-            const lastProd = PROD_DATA[lastIdx];
-            const prevProd = PROD_DATA[prevIdx];
-
-            const rtyChange = (lastRTY - prevRTY);
-            const badChange = lastBad - prevBad;
-            const prodChange = ((lastProd - prevProd) / prevProd * 100);
-
-            const container = document.getElementById('compareGrid' + suffix);
-            if (!container) return;
-            container.innerHTML = `
-                <div class="compare-card">
-                    <div class="small-label">综合RTY</div>
-                    <div class="big-num" style="color:#0033a0;">${formatPct(lastRTY)}</div>
-                    <div class="change-badge ${rtyChange >= 0 ? 'change-down' : 'change-up'}">${rtyChange >= 0 ? '▲' : '▼'} ${Math.abs(rtyChange).toFixed(2)}%</div>
-                    <div style="font-size:10px;color:#6b7a8f;">6月: ${formatPct(prevRTY)}</div>
-                </div>
-                <div class="compare-card">
-                    <div class="small-label">月度不良</div>
-                    <div class="big-num" style="color:#f9ab00;">${formatNum(lastBad)}</div>
-                    <div class="change-badge ${badChange <= 0 ? 'change-down' : 'change-up'}">${badChange <= 0 ? '▼' : '▲'} ${Math.abs(badChange)}件</div>
-                    <div style="font-size:10px;color:#6b7a8f;">6月: ${formatNum(prevBad)}</div>
-                </div>
-                <div class="compare-card">
-                    <div class="small-label">月产量</div>
-                    <div class="big-num" style="color:#1e8e3e;">${formatNum(lastProd)}</div>
-                    <div class="change-badge ${prodChange < -50 ? 'change-up' : 'change-down'}">${prodChange >= 0 ? '▲' : '▼'} ${Math.abs(prodChange).toFixed(1)}%</div>
-                    <div style="font-size:10px;color:#6b7a8f;">6月: ${formatNum(prevProd)}</div>
-                </div>
-            `;
+    // 5.2 各产品月度对比
+    const ctx2 = document.getElementById('productTrendChart').getContext('2d');
+    const colors = ['#f87171', '#60a5fa', '#4ade80'];
+    const datasets2 = prodNames.map((p, idx) => ({
+      label: p,
+      data: prodYield[p].map(v => +v.toFixed(2)),
+      borderColor: colors[idx % colors.length],
+      backgroundColor: 'transparent',
+      tension: 0.2,
+      pointRadius: 3,
+      borderWidth: 2,
+    }));
+    new Chart(ctx2, {
+      type: 'line',
+      data: { labels: months, datasets: datasets2 },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 10, font: { size: 9 } } }
+        },
+        scales: {
+          y: { min: 94, max: 100, ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' } },
+          x: { ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
         }
+      }
+    });
 
-        function renderCharts(suffix = '') {
-            // 综合RTY + 产量
-            const ctx1 = document.getElementById('chartCombined' + suffix);
-            if (ctx1) {
-                new Chart(ctx1, {
-                    type: 'bar',
-                    data: {
-                        labels: MONTHS,
-                        datasets: [{
-                            label: '产量 (台)',
-                            data: PROD_DATA,
-                            backgroundColor: 'rgba(0,51,160,0.6)',
-                            borderRadius: 4,
-                            order: 2,
-                            yAxisID: 'y'
-                        }, {
-                            label: '综合RTY (%)',
-                            data: RTY_DATA,
-                            type: 'line',
-                            borderColor: '#d93025',
-                            backgroundColor: 'rgba(217,48,37,0.08)',
-                            tension: 0.25,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#d93025',
-                            pointBorderColor: 'white',
-                            pointBorderWidth: 2,
-                            fill: true,
-                            borderWidth: 3,
-                            order: 1,
-                            yAxisID: 'y1'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false },
-                        plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, font: { size: 9 } } }
-                        },
-                        scales: {
-                            y: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#e9edf4' },
-                                ticks: { font: { size: 8 }, callback: v => v >= 1000 ? (v / 1000) + 'K' : v },
-                                title: { display: true, text: '产量', color: '#0033a0', font: { size: 8 } } },
-                            y1: { type: 'linear', position: 'right', min: 95, max: 100.5, grid: { display: false },
-                                ticks: { font: { size: 8 }, callback: v => v + '%' },
-                                title: { display: true, text: 'RTY', color: '#d93025', font: { size: 8 } } },
-                            x: { grid: { display: false }, ticks: { font: { size: 8 } } }
-                        }
-                    }
-                });
-            }
-
-            const summaryEl = document.getElementById('chartSummaryStats' + suffix);
-            if (summaryEl) {
-                const avgRTY = avg(RTY_DATA);
-                const maxRTY = max(RTY_DATA);
-                const minRTY = min(RTY_DATA);
-                const maxIdx = RTY_DATA.indexOf(maxRTY);
-                const minIdx = RTY_DATA.indexOf(minRTY);
-                summaryEl.innerHTML = `
-                    <span>📊 平均 ${formatPct(avgRTY)} · 最高 ${formatPct(maxRTY)} (${MONTHS[maxIdx]}) · 最低 ${formatPct(minRTY)} (${MONTHS[minIdx]})</span>
-                    <span>📦 总产量 ${formatNum(sum(PROD_DATA))} · 月均 ${formatNum(sum(PROD_DATA)/totalMonths)}</span>
-                `;
-            }
-
-            // 工序对比
-            const ctx2 = document.getElementById('chartCompare' + suffix);
-            if (ctx2) {
-                const procLabels = Object.keys(PROC_CURRENT);
-                const curVals = procLabels.map(k => PROC_CURRENT[k]);
-                const prevVals = procLabels.map(k => PROC_PREV[k] || 0);
-                new Chart(ctx2, {
-                    type: 'bar',
-                    data: {
-                        labels: procLabels,
-                        datasets: [
-                            { label: '6月', data: prevVals, backgroundColor: 'rgba(0,51,160,0.6)',
-                                borderRadius: 4 },
-                            { label: '7月', data: curVals, backgroundColor: 'rgba(217,48,37,0.8)',
-                                borderRadius: 4 }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'top', labels: { usePointStyle: true,
-                                font: { size: 9 } } } },
-                        scales: { y: { beginAtZero: true, grid: { color: '#e9edf4' }, ticks: { font: { size: 8 } } },
-                            x: { grid: { display: false }, ticks: { font: { size: 8 } } } }
-                    }
-                });
-            }
-
-            const annoEl = document.getElementById('compareAnnotation' + suffix);
-            if (annoEl) {
-                const procLabels = Object.keys(PROC_CURRENT);
-                let maxIncLabel = '',
-                    maxIncVal = 0,
-                    maxDecLabel = '',
-                    maxDecVal = 0;
-                procLabels.forEach(k => {
-                    const diff = (PROC_CURRENT[k] || 0) - (PROC_PREV[k] || 0);
-                    if (diff > maxIncVal) { maxIncVal = diff;
-                        maxIncLabel = k; }
-                    if (diff < maxDecVal) { maxDecVal = diff;
-                        maxDecLabel = k; }
-                });
-                annoEl.innerHTML =
-                    `⚠️ <strong>${maxIncLabel}</strong> ▲ ${Math.abs(maxIncVal)}件 · <strong>${maxDecLabel}</strong> ▼ ${Math.abs(maxDecVal)}件`;
-            }
-
-            // 月度不良趋势
-            const ctx3 = document.getElementById('chartTrend' + suffix);
-            if (ctx3) {
-                new Chart(ctx3, {
-                    type: 'bar',
-                    data: {
-                        labels: MONTHS,
-                        datasets: [
-                            { label: '月度不良', data: MONTHLY_BAD, backgroundColor: 'rgba(217,48,37,0.7)',
-                                borderRadius: 4, order: 2, yAxisID: 'y' },
-                            { label: '累积不良', data: CUM_BAD, type: 'line', borderColor: '#0033a0',
-                                backgroundColor: 'rgba(0,51,160,0.08)', tension: 0.2, pointRadius: 3,
-                                pointBackgroundColor: '#0033a0', pointBorderColor: 'white', pointBorderWidth: 2,
-                                fill: true, order: 1, borderWidth: 3, yAxisID: 'y1' }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false },
-                        plugins: { legend: { position: 'top', labels: { usePointStyle: true,
-                                font: { size: 9 } } } },
-                        scales: {
-                            y: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#e9edf4' },
-                                ticks: { font: { size: 8 } },
-                                title: { display: true, text: '月度', color: '#d93025', font: { size: 8 } } },
-                            y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { display: false },
-                                ticks: { font: { size: 8 } },
-                                title: { display: true, text: '累积', color: '#0033a0', font: { size: 8 } } },
-                            x: { grid: { display: false }, ticks: { font: { size: 8 } } }
-                        }
-                    }
-                });
-            }
-
-            // 各产线
-            const lineContainer = document.getElementById('productLines' + suffix);
-            if (lineContainer) {
-                let lineHTML = '';
-                LINE_NAMES.forEach((name, idx) => {
-                    const color = LINE_COLORS[idx % LINE_COLORS.length];
-                    const lastRTY = LINE_RTY[idx][lastIdx];
-                    const change = LINE_RTY_CHANGE[idx];
-                    const badDetail = LINE_BAD_DETAIL[idx];
-                    const detailStr = Object.entries(badDetail).map(([k, v]) => `${k}${v}`).join(' · ');
-                    const cumBad = LINE_CUM_BAD[idx];
-                    const monthBad = LINE_MONTH_BAD[idx];
-                    const changeColor = change >= 0 ? '#1e8e3e' : '#d93025';
-                    let cardClass = 'card';
-                    if (idx === 0) cardClass += ' card-tclient';
-                    else if (idx === 1) cardClass += ' card-w04';
-                    else cardClass += ' card-d01';
-                    const badgeLabel = idx === 0 ? '标杆' : idx === 1 ? '最大短板' : '改善中';
-                    const badgeClass = idx === 0 ? 'badge-green' : idx === 1 ? 'badge-red' : 'badge-yellow';
-
-                    lineHTML += `
-                        <div class="${cardClass}" style="padding:8px 10px 10px;">
-                            <div class="card-title" style="font-size:11px;margin-bottom:3px;">${idx === 0 ? '🏆' : idx === 1 ? '🔴' : '🔧'} ${name} <span class="badge ${badgeClass}" style="font-size:8px;">${badgeLabel}</span></div>
-                            <div style="font-size:11px;color:#4a5a72;margin-bottom:3px;">
-                                7月 RTY <strong style="color:${color};font-size:16px;">${formatPct(lastRTY)}</strong> 
-                                <span style="color:${changeColor};font-size:11px;">${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%</span>
-                            </div>
-                            <div class="chart-container short" style="height:70px;">
-                                <canvas id="chartLine_${idx}${suffix}"></canvas>
-                            </div>
-                            <div style="font-size:9px;color:#4a5a72;margin-top:3px;background:#f8faff;padding:2px 6px;border-radius:4px;">
-                                ${detailStr}
-                            </div>
-                            <div style="font-size:9px;color:#4a5a72;margin-top:1px;background:#f8faff;padding:2px 6px;border-radius:4px;">
-                                📦 累计 ${formatNum(cumBad)} · 7月 ${formatNum(monthBad)}
-                            </div>
-                        </div>
-                    `;
-                });
-                lineContainer.innerHTML = lineHTML;
-
-                LINE_NAMES.forEach((name, idx) => {
-                    const canvas = document.getElementById('chartLine_' + idx + suffix);
-                    if (!canvas) return;
-                    const color = LINE_COLORS[idx % LINE_COLORS.length];
-                    new Chart(canvas, {
-                        type: 'line',
-                        data: {
-                            labels: MONTHS,
-                            datasets: [{ label: name + ' RTY', data: LINE_RTY[idx], borderColor: color,
-                                tension: 0.2, pointRadius: 2, borderWidth: 2, fill: false }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { min: 95, max: 100, ticks: { callback: v => v + '%',
-                                        font: { size: 7 } }, grid: { color: '#e9edf4' } },
-                                x: { grid: { display: false }, ticks: { font: { size: 6 } } }
-                            }
-                        }
-                    });
-                });
-            }
+    // 5.3 7月各产品良品率
+    const ctx3 = document.getElementById('julyProductChart').getContext('2d');
+    const julyYieldArr = prodNames.map(p => prodJuly[p].rty * 100);
+    const barColors = ['#f87171', '#60a5fa', '#4ade80'];
+    new Chart(ctx3, {
+      type: 'bar',
+      data: {
+        labels: prodNames,
+        datasets: [{
+          label: '良品率 (%)',
+          data: julyYieldArr.map(v => +v.toFixed(2)),
+          backgroundColor: barColors.map(c => c + '66'),
+          borderColor: barColors,
+          borderWidth: 2,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => '良品率: ' + ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: { min: 93, max: 100, ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
+            grid: { color: 'rgba(30,45,74,0.5)' } },
+          x: { ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
         }
+      }
+    });
 
-        function renderPareto(suffix = '') {
-            const container = document.getElementById('paretoList' + suffix);
-            if (!container) return;
-            const totalP = PARETO_DATA.reduce((s, d) => s + d.value, 0);
-            let cumP = 0;
-            let html = '';
-            PARETO_DATA.forEach((item) => {
-                cumP += item.value;
-                const pct = totalP > 0 ? Math.round((item.value / totalP) * 100) : 0;
-                const cumPct = totalP > 0 ? Math.round((cumP / totalP) * 100) : 0;
-                html += `
-                    <div class="pareto-row">
-                        <span class="p-label">${item.label}</span>
-                        <div class="p-bar-bg"><div class="p-bar" style="width:${pct}%;background:${item.color};">${pct}%</div></div>
-                        <span class="p-val">${item.value}</span>
-                        <span class="p-pct">${cumPct}%</span>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-
-            const annoEl = document.getElementById('paretoAnnotation' + suffix);
-            if (annoEl) {
-                const topTwo = PARETO_DATA.slice(0, 2);
-                const topTwoSum = topTwo.reduce((s, d) => s + d.value, 0);
-                const topTwoPct = totalP > 0 ? Math.round((topTwoSum / totalP) * 100) : 0;
-                annoEl.innerHTML = `🔴 <strong>${topTwo.map(d => d.label).join('+')}</strong> 占 ${topTwoPct}%`;
-            }
+    // 5.4 工序分布 (饼图)
+    const ctx4 = document.getElementById('stationChart').getContext('2d');
+    const stationColors = ['#60a5fa', '#4ade80', '#fb923c', '#f87171', '#a78bfa'];
+    new Chart(ctx4, {
+      type: 'doughnut',
+      data: {
+        labels: stationLabels,
+        datasets: [{
+          data: stationValues,
+          backgroundColor: stationColors.slice(0, stationLabels.length),
+          borderWidth: 1,
+          borderColor: '#0f1729',
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 12, font: { size: 9 }, color: '#c8d0dc' } }
         }
+      }
+    });
 
-        function renderPriorities(suffix = '') {
-            const container = document.getElementById('priorityList' + suffix);
-            if (!container) return;
-            const totalP = PARETO_DATA.reduce((s, d) => s + d.value, 0);
-            const priorityMap = [
-                { label: PARETO_DATA[0].label, p: 'P0', color: 'priority-p0',
-                    desc: `7月 <strong>${PARETO_DATA[0].value}件</strong>，占${totalP > 0 ? Math.round((PARETO_DATA[0].value/totalP)*100) : 0}%` },
-                { label: PARETO_DATA[1].label, p: 'P1', color: 'priority-p1',
-                    desc: `7月 <strong>${PARETO_DATA[1].value}件</strong>，占${totalP > 0 ? Math.round((PARETO_DATA[1].value/totalP)*100) : 0}%` },
-                { label: PARETO_DATA[2].label, p: 'P2', color: 'priority-p2',
-                    desc: `7月 <strong>${PARETO_DATA[2].value}件</strong>` },
-                { label: '其他', p: 'P3', color: 'priority-p3', desc: '持续监控，维持水平' }
-            ];
-            const priorityIcons = { P0: '🔴', P1: '🟠', P2: '🟡', P3: '🟢' };
-            let html = '';
-            priorityMap.forEach((item) => {
-                const icon = priorityIcons[item.p] || '🟢';
-                html += `
-                    <div class="suggestion-item ${item.color}" style="padding:4px 10px;margin-bottom:3px;">
-                        <div class="s-title" style="font-size:11px;">${icon} ${item.p} · ${item.label}</div>
-                        <div class="s-desc" style="font-size:10px;">${item.desc}</div>
-                        <div class="s-action" style="font-size:9px;">→ ${item.p === 'P0' ? '立即专项改善' : item.p === 'P1' ? '本周执行' : item.p === 'P2' ? '持续监控' : '维持水平'}</div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
+    // 5.5 TOP失效模式 (横向条形图)
+    const ctx5 = document.getElementById('defectChart').getContext('2d');
+    const defectColorsBar = ['#f87171', '#fb923c', '#facc15', '#60a5fa', '#a78bfa'];
+    new Chart(ctx5, {
+      type: 'bar',
+      data: {
+        labels: defectLabels,
+        datasets: [{
+          label: '不良数量',
+          data: defectValues,
+          backgroundColor: defectColorsBar.map(c => c + '77'),
+          borderColor: defectColorsBar,
+          borderWidth: 2,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => ctx.parsed.x + ' 件' } }
+        },
+        scales: {
+          x: { beginAtZero: true, ticks: { color: '#7a8599', font: { size: 10 } }, grid: { color: 'rgba(30,45,74,0.5)' } },
+          y: { ticks: { color: '#7a8599', font: { size: 9 } }, grid: { color: 'rgba(30,45,74,0.5)' } }
         }
+      }
+    });
 
-        function renderAI(suffix = '') {
-            const suggestions = [{
-                tag: '🔴 高优先级 · 根因分析',
-                title: '① D01装配不良上升 200%（8→24件）',
-                desc: '7月D01装配不良从6月8件增至24件，建议分段追溯锁定异常。',
-                impact: '📈 预计 D01 RTY 可回升至 99.0%+',
-                confidence: '置信度 90%'
-            }, {
-                tag: '🟡 中优先级 · 预测性维护',
-                title: '② W04装配不良 178→0件（-100%）',
-                desc: '建议将有效改善措施固化为标准作业程序，防止复发。',
-                impact: '📉 稳定 W04 RTY ≥ 99.0%',
-                confidence: '置信度 85%'
-            }, {
-                tag: '🟢 优化建议 · 排产策略',
-                title: '③ 7月产量仅为6月的28%',
-                desc: '产量恢复后，重点关注电检工序（7月108件仍为最大不良源）。',
-                impact: '⚖️ 目标RTY ≥ 99.0%',
-                confidence: '置信度 76%'
-            }, {
-                tag: '🟢 长期优化 · 智能化升级',
-                title: '④ 气检工序7月实现零不良',
-                desc: '将该工序管控经验复制到电检和拍照工序，推动全流程零不良。',
-                impact: '🤖 目标总不良 ≤ 100件/月',
-                confidence: '置信度 72%'
-            }];
+    // ================================================================
+    // 6. 迷你月度表格 (无"得"字)
+    // ================================================================
+    const miniBody = document.getElementById('miniMonthlyBody');
+    for (let i = 0; i < months.length; i++) {
+      const y = monthlyYield[i] * 100;
+      const status = y >= 97.5 ? '达标' : '未达标';
+      const cls = y >= 97.5 ? 'green' : 'red';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${months[i]}</td><td>${y.toFixed(2)}%</td><td><span class="tag ${cls}">${status}</span></td>`;
+      miniBody.appendChild(tr);
+    }
 
-            const container = document.getElementById('aiSuggestions' + suffix);
-            if (!container) return;
-            let html = '';
-            suggestions.forEach(item => {
-                html += `
-                    <div class="ai-item" style="padding:6px 10px;">
-                        <div class="ai-tag">${item.tag}</div>
-                        <div class="ai-title" style="font-size:11px;">${item.title}</div>
-                        <div class="ai-desc" style="font-size:10px;">${item.desc}</div>
-                        <div class="ai-impact" style="font-size:10px;"><span>${item.impact}</span> <span class="ai-confidence">${item.confidence}</span></div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function renderChangeDetail(suffix = '') {
-            const container = document.getElementById('changeDetailGrid' + suffix);
-            if (!container) return;
-            const procLabels = Object.keys(PROC_CURRENT);
-            let html = '';
-            procLabels.forEach((k) => {
-                const cur = PROC_CURRENT[k] || 0;
-                const prev = PROC_PREV[k] || 0;
-                const diff = cur - prev;
-                const color = diff > 0 ? '#d93025' : '#1e8e3e';
-                const arrow = diff > 0 ? '▲' : '▼';
-                const pct = prev !== 0 ? ((diff / prev) * 100) : (cur > 0 ? 100 : 0);
-                html += `
-                    <div style="background:#f8faff;padding:4px 6px;border-radius:6px;border-left:3px solid ${color};text-align:center;">
-                        <div style="color:#4a5a72;font-size:9px;">${k}</div>
-                        <div style="font-weight:700;font-size:14px;color:${color};">${arrow}${Math.abs(diff)}</div>
-                        <div style="font-size:9px;color:${color};">${diff !== 0 ? (diff > 0 ? '+' : '') + pct.toFixed(1) + '%' : '持平'}</div>
-                        <div style="font-size:8px;color:#6b7a8f;">${prev}→${cur}</div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function renderTargets(suffix = '') {
-            const container = document.getElementById('targetList' + suffix);
-            if (!container) return;
-            container.innerHTML = `
-                <div style="display:flex;flex-direction:column;gap:4px;">
-                    <div style="background:#f8faff;padding:5px 8px;border-radius:6px;border-left:4px solid #d93025;">
-                        <div style="font-weight:700;font-size:11px;">① D01 装配专项</div>
-                        <div style="font-size:10px;color:#4a5a72;">排查设备/人员 → 目标 <strong style="color:#1e8e3e;">≤5件</strong></div>
-                    </div>
-                    <div style="background:#f8faff;padding:5px 8px;border-radius:6px;border-left:4px solid #f9ab00;">
-                        <div style="font-weight:700;font-size:11px;">② 电检持续改善</div>
-                        <div style="font-size:10px;color:#4a5a72;">校准设备 → 目标 <strong style="color:#1e8e3e;">≤60件</strong></div>
-                    </div>
-                    <div style="background:#f8faff;padding:5px 8px;border-radius:6px;border-left:4px solid #0033a0;">
-                        <div style="font-weight:700;font-size:11px;">③ W04 经验固化</div>
-                        <div style="font-size:10px;color:#4a5a72;">标准化改善措施 → <strong style="color:#1e8e3e;">装配≤2件</strong></div>
-                    </div>
-                    <div style="margin-top:2px;font-size:10px;color:#4a5a72;background:#eaf0fa;padding:3px 8px;border-radius:6px;">
-                        📅 <strong>8月目标：</strong>RTY ≥ 99.2% · 总不良 ≤ 200件
-                    </div>
-                </div>
-            `;
-        }
-
-        // ================================================================
-        // ===== 执行所有渲染（两份） =====
-        // ================================================================
-
-        renderKPI('');
-        renderKPI('_clone');
-
-        renderCompare('');
-        renderCompare('_clone');
-
-        renderCharts('');
-        renderCharts('_clone');
-
-        renderPareto('');
-        renderPareto('_clone');
-
-        renderPriorities('');
-        renderPriorities('_clone');
-
-        renderAI('');
-        renderAI('_clone');
-
-        renderChangeDetail('');
-        renderChangeDetail('_clone');
-
-        renderTargets('');
-        renderTargets('_clone');
-
-        // ================================================================
-        // ===== 滚屏控制 =====
-        // ================================================================
-
-        const wrapper = document.getElementById('scrollWrapper');
-        let currentSpeed = 120; // 秒
-        let isPlaying = true;
-
-        const toggleBtn = document.getElementById('toggleBtn');
-        const speedBtn = document.getElementById('speedBtn');
-        const speedLabel = document.getElementById('speedLabel');
-
-        // 速度选项
-        const speeds = [
-            { label: '🐢 慢速', value: 180 },
-            { label: '🐇 中速', value: 120 },
-            { label: '🚀 快速', value: 70 }
-        ];
-        let speedIndex = 1;
-
-        function updateSpeed() {
-            const speed = speeds[speedIndex];
-            speedLabel.textContent = speed.value + 's';
-            wrapper.style.animationDuration = speed.value + 's';
-        }
-
-        function togglePlay() {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                wrapper.style.animationPlayState = 'running';
-                toggleBtn.textContent = '⏸ 暂停';
-                toggleBtn.classList.add('active');
-            } else {
-                wrapper.style.animationPlayState = 'paused';
-                toggleBtn.textContent = '▶ 播放';
-                toggleBtn.classList.remove('active');
-            }
-        }
-
-        toggleBtn.addEventListener('click', togglePlay);
-
-        speedBtn.addEventListener('click', () => {
-            speedIndex = (speedIndex + 1) % speeds.length;
-            updateSpeed();
-            speedBtn.textContent = speeds[speedIndex].label;
-        });
-
-        // 鼠标悬停暂停（已通过CSS实现）
-        // 额外：点击页面任意位置也可切换
-        document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.key === 'Space') {
-                e.preventDefault();
-                togglePlay();
-            }
-        });
-
-        // 初始化速度显示
-        updateSpeed();
-        speedBtn.textContent = speeds[1].label;
-
-        console.log('✅ 自动滚屏看板已加载');
-        console.log(`📊 7月RTY: ${formatPct(RTY_DATA[lastIdx])}, 不良: ${MONTHLY_BAD[lastIdx]}件`);
-        console.log(`🔄 滚屏速度: ${currentSpeed}秒/轮`);
-        console.log('💡 操作提示：悬停暂停 · 空格键切换 · 速度按钮调节');
-    </script>
+    // 自动滚动: 通过CSS animation已实现无缝循环, 无需额外JS
+  </script>
 </body>
 </html>
