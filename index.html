@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HVAC车间 · 月度看板</title>
+  <title>HVAC车间 · 1-9月看板</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
   </script>
   <style>
@@ -324,11 +324,11 @@
   <div class="dashboard">
     <!-- Header -->
     <div class="header">
-      <div class="header-title"><h1>HVAC车间 · 月度看板</h1></div>
+      <div class="header-title"><h1>HVAC车间 · 1-9月看板</h1></div>
       <div class="header-stats">
-        <div class="stat-item"><span class="stat-label">📆 7月累计不良</span><span class="stat-value red" id="kpiBad">--</span></div>
-        <div class="stat-item"><span class="stat-label">📦 7月累计产量</span><span class="stat-value blue" id="kpiOutput">--</span></div>
-        <div class="stat-item"><span class="stat-label">📊 7月良品率</span><span class="stat-value green" id="kpiYield">--</span></div>
+        <div class="stat-item"><span class="stat-label">📆 9月累计不良</span><span class="stat-value red" id="kpiBad">--</span></div>
+        <div class="stat-item"><span class="stat-label">📦 9月累计产量</span><span class="stat-value blue" id="kpiOutput">--</span></div>
+        <div class="stat-item"><span class="stat-label">📊 9月良品率</span><span class="stat-value green" id="kpiYield">--</span></div>
         <div class="stat-item"><span class="stat-label">🎯 目标</span><span class="stat-value cyan">98%</span></div>
       </div>
       <div class="datetime" id="datetime"></div>
@@ -336,15 +336,15 @@
 
     <!-- Row 2 -->
     <div class="row-main">
-      <div class="panel"><div class="panel-header"><span class="panel-title">📈 月度良品率趋势 (1–7月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">📈 月度良品率趋势 (1–9月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
       <div class="panel"><div class="panel-header"><span class="panel-title">📊 各产品月度良品率对比</span></div><div class="panel-body"><div class="chart-container"><canvas id="productTrendChart"></canvas></div></div></div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">🏭 7月各产品良品率</span></div><div class="panel-body"><div class="chart-container"><canvas id="julyProductChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">🏭 9月各产品良品率</span></div><div class="panel-body"><div class="chart-container"><canvas id="septemberProductChart"></canvas></div></div></div>
     </div>
 
     <!-- Row 3 -->
     <div class="row-bottom">
-      <div class="panel"><div class="panel-header"><span class="panel-title">🧩 7月不良 · 工序分布</span></div><div class="panel-body"><div class="chart-container"><canvas id="stationChart"></canvas></div></div></div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">⚠️ TOP失效模式 (7月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="defectChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">🧩 9月不良 · 工序分布</span></div><div class="panel-body"><div class="chart-container"><canvas id="stationChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">⚠️ TOP失效模式 (9月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="defectChart"></canvas></div></div></div>
 
       <div class="panel">
         <div class="panel-header"><span class="panel-title">📋 月度明细 & AI建议</span></div>
@@ -362,72 +362,112 @@
 
   <script>
     // ================================================================
-    // 1. 核心数据 (从Excel提取)
+    // 1. 核心数据 (从Excel提取, 1-9月)
     // ================================================================
 
-    // 各产品RTY数据 (1-7月)
+    // 各产品RTY数据 (1-9月, 使用更新后的7/8/9月值)
     const rtyData = {
-      'T客户': [0.9918340480804916, 0.9971683873720136, 0.9970267211615074, 0.9869827374801955, 0.9861061841001132, 0.9925697390293058, 0.9996],
-      'W04': [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9916],
-      'D01': [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9863]
+      'T客户': [0.9918340480804916, 0.9971683873720136, 0.9970267211615074, 0.9869827374801955, 0.9861061841001132, 0.9925697390293058, 0.9876299500150285, 0.9888326735495313, 0.9913],
+      'W04': [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9608295009092748, 0.9609941226335122, 0.8809999999999999],
+      'D01': [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9938708673091179, 0.995353846153846, 0.9958]
     };
 
     const prodNames = ['T客户', 'W04', 'D01'];
-    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'];
 
-    // 7月生产数
-    const julyProd = {
-      'T客户': 16987,
-      'W04': 6676,
-      'D01': 4960
+    // 各月生产数 (空调箱总数量)
+    const monthlyProd = {
+      'T客户': [24251, 23440, 33887, 29034, 27409, 28102, 32082, 31576, 10608],
+      'W04': [20575, 16786, 22295, 20960, 20944, 20960, 14847, 17695, 2611],
+      'D01': [6637, 363, 12705, 13166, 12725, 13354, 8094, 5187, 4501]
     };
 
-    // 7月工序不良明细 (从Excel 7月 sheet提取)
-    const stationData = {
-      '装配': { 'T客户': 0, 'W04': 0, 'D01': 31 },
-      '气检': { 'T客户': 0, 'W04': 1, 'D01': 0 },
-      '电检': { 'T客户': 163, 'W04': 37, 'D01': 35 },
-      '拍照': { 'T客户': 0, 'W04': 15, 'D01': 1 },
-      'GP12': { 'T客户': 13, 'W04': 3, 'D01': 1 }
+    // 各月工序不良明细 (从Excel各月sheet提取)
+    const stationDataByMonth = {
+      '1月': {
+        'T客户': { '装配': 0, '气检': 4, '电检': 179, '拍照': 3, 'GP12': 12 },
+        'W04': { '装配': 1, '气检': 2, '电检': 138, '拍照': 1, 'GP12': 26 },
+        'D01': { '装配': 12, '气检': 12, '电检': 20, '拍照': 7, 'GP12': 6 }
+      },
+      '2月': {
+        'T客户': { '装配': 0, '气检': 10, '电检': 38, '拍照': 2, 'GP12': 12 },
+        'W04': { '装配': 0, '气检': 1, '电检': 18, '拍照': 0, 'GP12': 27 },
+        'D01': { '装配': 0, '气检': 0, '电检': 0, '拍照': 0, 'GP12': 1 }
+      },
+      '3月': {
+        'T客户': { '装配': 0, '气检': 3, '电检': 37, '拍照': 10, 'GP12': 46 },
+        'W04': { '装配': 0, '气检': 0, '电检': 166, '拍照': 0, 'GP12': 11 },
+        'D01': { '装配': 10, '气检': 13, '电检': 17, '拍照': 36, 'GP12': 16 }
+      },
+      '4月': {
+        'T客户': { '装配': 0, '气检': 26, '电检': 308, '拍照': 21, 'GP12': 21 },
+        'W04': { '装配': 33, '气检': 20, '电检': 242, '拍照': 122, 'GP12': 9 },
+        'D01': { '装配': 30, '气检': 317, '电检': 90, '拍照': 210, 'GP12': 55 }
+      },
+      '5月': {
+        'T客户': { '装配': 20, '气检': 0, '电检': 264, '拍照': 86, 'GP12': 12 },
+        'W04': { '装配': 1, '气检': 5, '电检': 146, '拍照': 60, 'GP12': 13 },
+        'D01': { '装配': 21, '气检': 70, '电检': 243, '拍照': 7, 'GP12': 2 }
+      },
+      '6月': {
+        'T客户': { '装配': 0, '气检': 5, '电检': 173, '拍照': 7, 'GP12': 22 },
+        'W04': { '装配': 178, '气检': 23, '电检': 106, '拍照': 43, 'GP12': 6 },
+        'D01': { '装配': 8, '气检': 19, '电检': 120, '拍照': 4, 'GP12': 8 }
+      },
+      '7月': {
+        'T客户': { '装配': 0, '气检': 0, '电检': 376, '拍照': 0, 'GP12': 21 },
+        'W04': { '装配': 0, '气检': 1, '电检': 192, '拍照': 380, 'GP12': 8 },
+        'D01': { '装配': 0, '气检': 0, '电检': 48, '拍照': 1, 'GP12': 2 }
+      },
+      '8月': {
+        'T客户': { '装配': 0, '气检': 0, '电检': 337, '拍照': 0, 'GP12': 15 },
+        'W04': { '装配': 40, '气检': 5, '电检': 354, '拍照': 281, 'GP12': 10 },
+        'D01': { '装配': 6, '气检': 0, '电检': 15, '拍照': 0, 'GP12': 3 }
+      },
+      '9月': {
+        'T客户': { '装配': 0, '气检': 0, '电检': 73, '拍照': 13, 'GP12': 7 },
+        'W04': { '装配': 16, '气检': 8, '电检': 65, '拍照': 213, 'GP12': 8 },
+        'D01': { '装配': 7, '气检': 3, '电检': 4, '拍照': 0, 'GP12': 5 }
+      }
     };
 
     const stationLabels = ['装配', '气检', '电检', '拍照', 'GP12'];
 
-    // 按工序汇总不良数
+    // ================================================================
+    // 2. 计算9月各产品不良数、良品数、良品率
+    // ================================================================
+    const septData = stationDataByMonth['9月'];
+    const septBad = {};
+    const septGood = {};
+    let totalBad = 0;
+    let totalProd = 0;
+
+    for (const p of prodNames) {
+      let bad = 0;
+      for (const s of stationLabels) {
+        bad += septData[p][s];
+      }
+      septBad[p] = bad;
+      septGood[p] = monthlyProd[p][8] - bad; // 9月生产数索引为8
+      totalBad += bad;
+      totalProd += monthlyProd[p][8];
+    }
+
+    // 9月各产品实际良品率 (基于工序不良累加)
+    const septRTY = {};
+    for (const p of prodNames) {
+      septRTY[p] = septGood[p] / monthlyProd[p][8];
+    }
+
+    // 9月工序汇总不良数
     const stationValues = stationLabels.map(s => {
       let sum = 0;
-      for (const p of prodNames) sum += stationData[s][p];
+      for (const p of prodNames) sum += septData[p][s];
       return sum;
     });
 
-    // 计算7月各产品不良数 (按工序累加)
-    const julyBad = {};
-    for (const p of prodNames) {
-      let total = 0;
-      for (const s of stationLabels) {
-        total += stationData[s][p];
-      }
-      julyBad[p] = total;
-    }
-
-    // 计算7月各产品良品数
-    const julyGood = {};
-    let totalBad = 0;
-    let totalProd = 0;
-    for (const p of prodNames) {
-      julyGood[p] = julyProd[p] - julyBad[p];
-      totalBad += julyBad[p];
-      totalProd += julyProd[p];
-    }
-
-    // 7月各产品实际良品率 (基于工序不良累加)
-    const julyRTY = {};
-    for (const p of prodNames) {
-      julyRTY[p] = julyGood[p] / julyProd[p];
-    }
-
     // ================================================================
-    // 2. 月度平均良品率 (使用RTY数据)
+    // 3. 月度平均良品率 (使用RTY数据)
     // ================================================================
     function avgRTY(monthIdx) {
       let sum = 0;
@@ -437,15 +477,15 @@
     const monthlyYield = months.map((_, idx) => avgRTY(idx));
 
     // ================================================================
-    // 3. KPI
+    // 4. KPI (9月)
     // ================================================================
-    const yield7 = 1 - totalBad / totalProd;
+    const yield9 = 1 - totalBad / totalProd;
     document.getElementById('kpiBad').textContent = totalBad.toLocaleString();
     document.getElementById('kpiOutput').textContent = totalProd.toLocaleString();
-    document.getElementById('kpiYield').textContent = (yield7 * 100).toFixed(2) + '%';
+    document.getElementById('kpiYield').textContent = (yield9 * 100).toFixed(2) + '%';
 
     // ================================================================
-    // 4. 时间
+    // 5. 时间
     // ================================================================
     function updateDateTime() {
       const now = new Date();
@@ -463,12 +503,12 @@
     updateDateTime();
 
     // ================================================================
-    // 5. Chart.js 渲染 (深色)
+    // 6. Chart.js 渲染 (深色)
     // ================================================================
     Chart.defaults.color = '#c8d0dc';
     Chart.defaults.borderColor = '#1a2540';
 
-    // 5.1 月度良品率趋势
+    // 6.1 月度良品率趋势 (1-9月)
     new Chart(document.getElementById('trendChart').getContext('2d'), {
       type: 'line',
       data: {
@@ -505,7 +545,7 @@
         },
         scales: {
           y: {
-            min: 95.5,
+            min: 85,
             max: 100,
             ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
             grid: { color: 'rgba(30,45,74,0.5)' }
@@ -518,7 +558,7 @@
       }
     });
 
-    // 5.2 各产品月度良品率对比
+    // 6.2 各产品月度良品率对比 (1-9月)
     new Chart(document.getElementById('productTrendChart').getContext('2d'), {
       type: 'line',
       data: {
@@ -544,7 +584,7 @@
         },
         scales: {
           y: {
-            min: 94,
+            min: 85,
             max: 100,
             ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
             grid: { color: 'rgba(30,45,74,0.5)' }
@@ -557,14 +597,14 @@
       }
     });
 
-    // 5.3 7月各产品良品率 (基于工序不良累加)
-    new Chart(document.getElementById('julyProductChart').getContext('2d'), {
+    // 6.3 9月各产品良品率 (基于工序不良累加)
+    new Chart(document.getElementById('septemberProductChart').getContext('2d'), {
       type: 'bar',
       data: {
         labels: prodNames,
         datasets: [{
           label: '良品率 (%)',
-          data: prodNames.map(p => +(julyRTY[p] * 100).toFixed(2)),
+          data: prodNames.map(p => +(septRTY[p] * 100).toFixed(2)),
           backgroundColor: ['#f8717166', '#60a5fa66', '#4ade8066'],
           borderColor: ['#f87171', '#60a5fa', '#4ade80'],
           borderWidth: 2,
@@ -577,7 +617,7 @@
         plugins: { legend: { display: false } },
         scales: {
           y: {
-            min: 93,
+            min: 85,
             max: 100,
             ticks: { callback: v => v + '%', color: '#7a8599', font: { size: 10 } },
             grid: { color: 'rgba(30,45,74,0.5)' }
@@ -590,7 +630,7 @@
       }
     });
 
-    // 5.4 工序分布 (饼图)
+    // 6.4 9月工序分布 (饼图)
     new Chart(document.getElementById('stationChart').getContext('2d'), {
       type: 'doughnut',
       data: {
@@ -611,8 +651,7 @@
       }
     });
 
-    // 5.5 TOP失效模式 (按工序汇总，横向条形图)
-    // 按不良数量从大到小排序
+    // 6.5 TOP失效模式 (按工序汇总，横向条形图)
     const stationSorted = stationLabels
       .map((label, idx) => ({ label, value: stationValues[idx] }))
       .filter(d => d.value > 0)
@@ -660,10 +699,10 @@
     });
 
     // ================================================================
-    // 6. 右侧内容: 月度明细(滚动) + AI建议(静态)
+    // 7. 右侧内容: 月度明细(滚动) + AI建议(静态)
     // ================================================================
 
-    // 6.1 月度明细滚动
+    // 7.1 月度明细滚动
     const monthTrack = document.getElementById('monthTrack');
 
     function buildMonthItems() {
@@ -681,7 +720,7 @@
     const monthItems = buildMonthItems();
     monthTrack.innerHTML = [...monthItems, ...monthItems].join('');
 
-    // 6.2 AI建议 (基于7月数据，按工序TOP)
+    // 7.2 AI建议 (基于9月数据，按工序TOP)
     const aiStatic = document.getElementById('aiStatic');
 
     const suggestions = stationSorted.map(({ label, value }) => {
