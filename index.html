@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HVAC车间 · 1-10月看板 (灰色背景)</title>
+  <title>HVAC车间 · 1-10月看板 (明亮版)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
-      /* 灰色背景系 */
-      --bg-page: #9ca3af;          /* 页面最外层灰 */
-      --bg-dashboard: #b4bcc8;     /* 看板容器灰 */
+      --bg-primary: #f4f7fc;
+      --bg-secondary: #eef2f9;
       --bg-card: #ffffff;
-      --bg-card-alt: #f8fafd;
-      --border-color: #cbd2dc;
-      --border-light: #e2e7ee;
-      --text-primary: #1a2634;
-      --text-secondary: #4b5563;
-      --text-muted: #6b7280;
-      --accent-blue: #2563eb;
-      --accent-cyan: #0891b2;
-      --accent-green: #059669;
+      --border-color: #d0ddeb;
+      --text-primary: #1e2b4a;
+      --text-secondary: #5a6d8c;
+      --accent-blue: #2a6df4;
+      --accent-cyan: #0a9fc9;
+      --accent-green: #0e9f6e;
       --accent-yellow: #d97706;
       --accent-red: #dc2626;
       --accent-purple: #7c3aed;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --shadow-sm: 0 4px 10px rgba(0, 20, 40, 0.04);
     }
 
     body {
-      font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-      background: var(--bg-page);
+      font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
       color: var(--text-primary);
       overflow: hidden;
       width: 100vw;
@@ -45,38 +44,37 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      background: var(--bg-dashboard);
+      background: linear-gradient(145deg, #f9fcff 0%, #e9f0fa 100%);
       border-radius: 12px;
-      padding: 10px;
-      box-shadow: inset 0 1px 4px rgba(0,0,0,0.08);
     }
 
-    /* ===== Header ===== */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 24px;
-      background: #ffffff;
+      padding: 10px 24px;
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 12px;
       position: relative;
       flex-shrink: 0;
-      height: 64px;
+      height: 68px;
       box-shadow: var(--shadow-sm);
     }
     .header::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-blue), transparent);
-      border-radius: 10px 10px 0 0;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue), var(--accent-purple));
+      border-radius: 12px 12px 0 0;
     }
     .header-title h1 {
-      font-size: clamp(20px, 2.2vw, 30px);
+      font-size: clamp(20px, 2.2vw, 28px);
       font-weight: 700;
-      background: linear-gradient(135deg, #0e7490, #1d4ed8);
+      background: linear-gradient(135deg, #0f5ad0, #0a9fc9);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -94,14 +92,15 @@
       gap: 2px;
     }
     .stat-label {
-      font-size: 11px;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-secondary);
-      font-weight: 600;
       letter-spacing: 0.3px;
     }
     .stat-value {
       font-size: clamp(18px, 1.8vw, 26px);
       font-weight: 800;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
     .stat-value.blue { color: var(--accent-blue); }
     .stat-value.green { color: var(--accent-green); }
@@ -109,17 +108,16 @@
     .stat-value.cyan { color: var(--accent-cyan); }
     .datetime {
       font-size: clamp(12px, 1vw, 15px);
+      font-weight: 500;
       color: var(--text-secondary);
       min-width: 160px;
       text-align: right;
-      font-weight: 600;
-      background: #f1f5fb;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid #e2e8f2;
+      background: #f0f5fd;
+      padding: 6px 12px;
+      border-radius: 24px;
+      border: 1px solid #d9e4f0;
     }
 
-    /* ===== 布局 ===== */
     .row-main {
       flex: 1;
       display: grid;
@@ -135,39 +133,37 @@
       min-height: 0;
     }
 
-    /* ===== 卡片 ===== */
     .panel {
-      background: #ffffff;
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s, transform 0.2s;
+      transition: all 0.1s ease;
     }
-    .panel:hover { box-shadow: var(--shadow-md); }
     .panel-header {
-      padding: 9px 14px;
-      border-bottom: 1px solid var(--border-light);
+      padding: 8px 16px;
+      border-bottom: 1px solid #e3eaf3;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-shrink: 0;
-      background: #f8fafd;
+      background: #fbfdff;
     }
     .panel-header::before {
       content: '';
       width: 4px;
-      height: 16px;
+      height: 18px;
       background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue));
       border-radius: 4px;
     }
     .panel-title {
       font-size: 14px;
       font-weight: 700;
-      color: #1a2634;
-      letter-spacing: 0.3px;
+      color: #1f3a6b;
+      letter-spacing: 0.2px;
     }
     .panel-body {
       flex: 1;
@@ -176,7 +172,6 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      background: #ffffff;
     }
     .chart-container {
       position: relative;
@@ -184,75 +179,81 @@
       height: 100%;
     }
 
-    /* ===== 右侧滚动区 ===== */
     .right-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       min-height: 0;
     }
+
     .month-scroll {
       flex: 1;
       overflow: hidden;
       position: relative;
-      border-radius: 8px;
-      background: #fafbfe;
-      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      background: #f8fbfe;
+      border: 1px solid #d0dded;
       min-height: 0;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.02);
     }
     .month-track {
       display: flex;
       flex-direction: column;
-      animation: scrollVertical 18s linear infinite;
-      padding: 2px 0;
+      animation: scrollVertical 16s linear infinite;
+      padding: 3px 0;
     }
     .month-track .month-item {
       flex-shrink: 0;
-      padding: 5px 12px;
-      font-size: 12px;
-      color: #1a2634;
-      border-bottom: 1px solid #edf1f8;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      color: #1f2e4a;
+      border-bottom: 1px solid #e2eaf5;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       white-space: nowrap;
-      font-weight: 600;
+      font-weight: 500;
     }
     .month-track .month-item .m-label {
-      min-width: 32px;
-      font-weight: 700;
-      color: #3a4d66;
+      min-width: 36px;
+      font-weight: 600;
+      color: #2a4c7a;
     }
     .month-track .month-item .m-value {
-      min-width: 52px;
+      min-width: 56px;
       text-align: right;
       font-weight: 700;
-      color: #1a2634;
+      color: #1d3a5c;
     }
     .month-track .month-item .m-status {
-      min-width: 44px;
+      min-width: 52px;
       text-align: center;
     }
+
     .mini-tag {
       display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
+      padding: 2px 12px;
+      border-radius: 40px;
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.3px;
     }
     .mini-tag.green {
-      background: #d1fae5;
-      color: #065f46;
-      border: 1px solid #a7f3d0;
+      background: #d2f0e0;
+      color: #0b6e4f;
+      border: 1px solid #a3d9c0;
     }
     .mini-tag.red {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
+      background: #ffe2e2;
+      color: #b91c1c;
+      border: 1px solid #f5b9b9;
     }
-    .month-scroll:hover .month-track { animation-play-state: paused; }
+
+    .month-scroll:hover .month-track {
+      animation-play-state: paused;
+    }
+
     @keyframes scrollVertical {
       0% { transform: translateY(0); }
       100% { transform: translateY(-50%); }
@@ -260,46 +261,82 @@
 
     .ai-static {
       flex: 0 0 auto;
-      background: #fafbfe;
-      border-radius: 8px;
-      border: 1px solid var(--border-light);
-      padding: 4px 6px;
+      background: #f5f9ff;
+      border-radius: 10px;
+      border: 1px solid #d0dded;
+      padding: 6px 8px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      max-height: 110px;
+      gap: 4px;
+      max-height: 108px;
       overflow-y: auto;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
     }
-    .ai-static::-webkit-scrollbar { width: 3px; }
-    .ai-static::-webkit-scrollbar-track { background: #eef1f8; border-radius: 3px; }
-    .ai-static::-webkit-scrollbar-thumb { background: #b8c6dc; border-radius: 3px; }
+    .ai-static::-webkit-scrollbar {
+      width: 4px;
+    }
+    .ai-static::-webkit-scrollbar-track {
+      background: #e0e8f2;
+      border-radius: 4px;
+    }
+    .ai-static::-webkit-scrollbar-thumb {
+      background: var(--accent-blue);
+      border-radius: 4px;
+    }
     .ai-item {
       font-size: 12px;
-      color: #1a2634;
-      padding: 4px 8px;
-      border-bottom: 1px solid #edf1f8;
-      line-height: 1.45;
-      font-weight: 600;
+      color: #16345c;
+      padding: 6px 10px;
+      border-bottom: 1px solid #dae5f2;
+      line-height: 1.4;
+      font-weight: 500;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     .ai-item strong {
-      color: #0e7490;
+      color: var(--accent-blue);
       margin-right: 6px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    /* ===== 响应式 ===== */
+    canvas {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02));
+    }
+
     @media (max-width: 1024px) {
-      .row-main { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
-      .row-main .panel:last-child { grid-column: span 2; }
-      .row-bottom { grid-template-columns: 1fr 1fr; }
-      .row-bottom .panel:last-child { grid-column: span 2; }
+      .row-main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
+      .row-main .panel:last-child {
+        grid-column: span 2;
+      }
+      .row-bottom {
+        grid-template-columns: 1fr 1fr;
+      }
+      .row-bottom .panel:last-child {
+        grid-column: span 2;
+      }
     }
     @media (max-width: 768px) {
-      .row-main, .row-bottom { grid-template-columns: 1fr; }
+      .row-main,
+      .row-bottom {
+        grid-template-columns: 1fr;
+      }
       .row-main .panel:last-child,
-      .row-bottom .panel:last-child { grid-column: span 1; }
-      .header { flex-wrap: wrap; height: auto; gap: 8px; padding: 10px 16px; }
-      .header-stats { gap: 12px; }
+      .row-bottom .panel:last-child {
+        grid-column: span 1;
+      }
+      .header {
+        flex-wrap: wrap;
+        height: auto;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+      .header-stats {
+        gap: 12px;
+      }
     }
   </style>
 </head>
@@ -321,7 +358,7 @@
     <div class="row-main">
       <div class="panel"><div class="panel-header"><span class="panel-title">📈 月度良品率趋势 (1–10月)</span></div><div class="panel-body"><div class="chart-container"><canvas id="trendChart"></canvas></div></div></div>
       <div class="panel"><div class="panel-header"><span class="panel-title">📊 各产品月度良品率对比</span></div><div class="panel-body"><div class="chart-container"><canvas id="productTrendChart"></canvas></div></div></div>
-      <div class="panel"><div class="panel-header"><span class="panel-title">🏭 10月各产品良品率</span></div><div class="panel-body"><div class="chart-container"><canvas id="octoberProductChart"></canvas></div></div></div>
+      <div class="panel"><div class="panel-header"><span class="panel-title">🏭 10月各产品良品率</span></div><div class="panel-body"><div class="chart-container"><canvas id="septemberProductChart"></canvas></div></div></div>
     </div>
 
     <!-- Row 3 -->
@@ -331,7 +368,7 @@
 
       <div class="panel">
         <div class="panel-header"><span class="panel-title">📋 月度明细 & AI建议</span></div>
-        <div class="panel-body" style="padding:4px 6px 6px 6px;">
+        <div class="panel-body" style="padding:6px 8px 8px 8px;">
           <div class="right-content">
             <div class="month-scroll">
               <div class="month-track" id="monthTrack"></div>
@@ -345,113 +382,112 @@
 
   <script>
     // ================================================================
-    // 1. 核心数据 (从 Excel 提取, 1-10月)
+    // 1. 核心数据 (从Excel提取, 1-10月)
     // ================================================================
-
     const rtyData = {
       'T客户': [0.9918340480804916, 0.9971683873720136, 0.9970267211615074, 0.9869827374801955, 0.9861061841001132, 0.9925697390293058, 0.9876299500150285, 0.9888326735495313, 0.9913, 0.9914],
-      'W04':   [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9608295009092748, 0.9609941226335122, 0.8809999999999999, 0.9741],
-      'D01':   [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9938708673091179, 0.995353846153846, 0.9958, 0.9955]
+      'W04': [0.9918073924665858, 0.9972699154056952, 0.9920581071989236, 0.9797129198473281, 0.9892838426279603, 0.9830180728326573, 0.9608295009092748, 0.9609941226335122, 0.8809999999999999, 0.9741],
+      'D01': [0.9924764652704534, 0.9952, 0.9955557260920896, 0.9626511696794776, 0.9735577053045187, 0.988110771640233, 0.9938708673091179, 0.995353846153846, 0.9958, 0.9955]
     };
 
     const prodNames = ['T客户', 'W04', 'D01'];
-    const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月'];
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月'];
 
     const monthlyProd = {
       'T客户': [24251, 23440, 33887, 29034, 27409, 28102, 32082, 31576, 10608, 25545],
-      'W04':   [20575, 16786, 22295, 20960, 20944, 20960, 14847, 17695, 2611, 5739],
-      'D01':   [6637, 363, 12705, 13166, 12725, 13354, 8094, 5187, 4501, 6497]
+      'W04': [20575, 16786, 22295, 20960, 20944, 20960, 14847, 17695, 2611, 5739],
+      'D01': [6637, 363, 12705, 13166, 12725, 13354, 8094, 5187, 4501, 6497]
     };
 
+    // 扩展后的月度工序数据（1-10月），根据Excel中各月sheet整理
     const stationDataByMonth = {
       '1月': {
-        'T客户': { '装配': 0,   '气检': 4,   '电检': 179, '拍照': 3,   'GP12': 12 },
-        'W04':   { '装配': 1,   '气检': 2,   '电检': 138, '拍照': 1,   'GP12': 26 },
-        'D01':   { '装配': 12,  '气检': 12,  '电检': 20,  '拍照': 7,   'GP12': 6  }
+        'T客户': { '装配': 0, '气检': 4, '电检': 179, '拍照': 3, 'GP12': 12 },
+        'W04': { '装配': 1, '气检': 2, '电检': 138, '拍照': 1, 'GP12': 26 },
+        'D01': { '装配': 12, '气检': 12, '电检': 20, '拍照': 7, 'GP12': 6 }
       },
       '2月': {
-        'T客户': { '装配': 0,   '气检': 10,  '电检': 38,  '拍照': 2,   'GP12': 12 },
-        'W04':   { '装配': 0,   '气检': 1,   '电检': 18,  '拍照': 0,   'GP12': 27 },
-        'D01':   { '装配': 0,   '气检': 0,   '电检': 0,   '拍照': 0,   'GP12': 1  }
+        'T客户': { '装配': 0, '气检': 10, '电检': 38, '拍照': 2, 'GP12': 12 },
+        'W04': { '装配': 0, '气检': 1, '电检': 18, '拍照': 0, 'GP12': 27 },
+        'D01': { '装配': 0, '气检': 0, '电检': 0, '拍照': 0, 'GP12': 1 }
       },
       '3月': {
-        'T客户': { '装配': 0,   '气检': 3,   '电检': 37,  '拍照': 10,  'GP12': 46 },
-        'W04':   { '装配': 0,   '气检': 0,   '电检': 166, '拍照': 0,   'GP12': 11 },
-        'D01':   { '装配': 10,  '气检': 13,  '电检': 17,  '拍照': 36,  'GP12': 16 }
+        'T客户': { '装配': 0, '气检': 3, '电检': 37, '拍照': 10, 'GP12': 46 },
+        'W04': { '装配': 0, '气检': 0, '电检': 166, '拍照': 0, 'GP12': 11 },
+        'D01': { '装配': 10, '气检': 13, '电检': 17, '拍照': 36, 'GP12': 16 }
       },
       '4月': {
-        'T客户': { '装配': 0,   '气检': 26,  '电检': 308, '拍照': 21,  'GP12': 21 },
-        'W04':   { '装配': 33,  '气检': 20,  '电检': 242, '拍照': 122, 'GP12': 9  },
-        'D01':   { '装配': 30,  '气检': 317, '电检': 90,  '拍照': 210, 'GP12': 55 }
+        'T客户': { '装配': 0, '气检': 26, '电检': 308, '拍照': 21, 'GP12': 21 },
+        'W04': { '装配': 33, '气检': 20, '电检': 242, '拍照': 122, 'GP12': 9 },
+        'D01': { '装配': 30, '气检': 317, '电检': 90, '拍照': 210, 'GP12': 55 }
       },
       '5月': {
-        'T客户': { '装配': 20,  '气检': 0,   '电检': 264, '拍照': 86,  'GP12': 12 },
-        'W04':   { '装配': 1,   '气检': 5,   '电检': 146, '拍照': 60,  'GP12': 13 },
-        'D01':   { '装配': 21,  '气检': 70,  '电检': 243, '拍照': 7,   'GP12': 2  }
+        'T客户': { '装配': 20, '气检': 0, '电检': 264, '拍照': 86, 'GP12': 12 },
+        'W04': { '装配': 1, '气检': 5, '电检': 146, '拍照': 60, 'GP12': 13 },
+        'D01': { '装配': 21, '气检': 70, '电检': 243, '拍照': 7, 'GP12': 2 }
       },
       '6月': {
-        'T客户': { '装配': 0,   '气检': 5,   '电检': 173, '拍照': 7,   'GP12': 22 },
-        'W04':   { '装配': 178, '气检': 23,  '电检': 106, '拍照': 43,  'GP12': 6  },
-        'D01':   { '装配': 8,   '气检': 19,  '电检': 120, '拍照': 4,   'GP12': 8  }
+        'T客户': { '装配': 0, '气检': 5, '电检': 173, '拍照': 7, 'GP12': 22 },
+        'W04': { '装配': 178, '气检': 23, '电检': 106, '拍照': 43, 'GP12': 6 },
+        'D01': { '装配': 8, '气检': 19, '电检': 120, '拍照': 4, 'GP12': 8 }
       },
       '7月': {
-        'T客户': { '装配': 0,   '气检': 0,   '电检': 376, '拍照': 0,   'GP12': 21 },
-        'W04':   { '装配': 0,   '气检': 1,   '电检': 192, '拍照': 380, 'GP12': 8  },
-        'D01':   { '装配': 0,   '气检': 0,   '电检': 48,  '拍照': 1,   'GP12': 2  }
+        'T客户': { '装配': 0, '气检': 0, '电检': 376, '拍照': 0, 'GP12': 21 },
+        'W04': { '装配': 0, '气检': 1, '电检': 192, '拍照': 380, 'GP12': 8 },
+        'D01': { '装配': 0, '气检': 0, '电检': 48, '拍照': 1, 'GP12': 2 }
       },
       '8月': {
-        'T客户': { '装配': 0,   '气检': 0,   '电检': 337, '拍照': 0,   'GP12': 15 },
-        'W04':   { '装配': 40,  '气检': 5,   '电检': 354, '拍照': 281, 'GP12': 10 },
-        'D01':   { '装配': 6,   '气检': 0,   '电检': 15,  '拍照': 0,   'GP12': 3  }
+        'T客户': { '装配': 0, '气检': 0, '电检': 337, '拍照': 0, 'GP12': 15 },
+        'W04': { '装配': 40, '气检': 5, '电检': 354, '拍照': 281, 'GP12': 10 },
+        'D01': { '装配': 6, '气检': 0, '电检': 15, '拍照': 0, 'GP12': 3 }
       },
       '9月': {
-        'T客户': { '装配': 0,   '气检': 0,   '电检': 73,  '拍照': 13,  'GP12': 7  },
-        'W04':   { '装配': 16,  '气检': 8,   '电检': 65,  '拍照': 213, 'GP12': 8  },
-        'D01':   { '装配': 7,   '气检': 3,   '电检': 4,   '拍照': 0,   'GP12': 5  }
+        'T客户': { '装配': 0, '气检': 0, '电检': 73, '拍照': 13, 'GP12': 7 },
+        'W04': { '装配': 16, '气检': 8, '电检': 65, '拍照': 213, 'GP12': 8 },
+        'D01': { '装配': 7, '气检': 3, '电检': 4, '拍照': 0, 'GP12': 5 }
       },
       '10月': {
-        'T客户': { '装配': 0,   '气检': 7,   '电检': 195, '拍照': 10,  'GP12': 9  },
-        'W04':   { '装配': 33,  '气检': 11,  '电检': 40,  '拍照': 61,  'GP12': 4  },
-        'D01':   { '装配': 3,   '气检': 1,   '电检': 24,  '拍照': 0,   'GP12': 1  }
+        'T客户': { '装配': 0, '气检': 7, '电检': 195, '拍照': 10, 'GP12': 9 },
+        'W04': { '装配': 33, '气检': 11, '电检': 40, '拍照': 61, 'GP12': 4 },
+        'D01': { '装配': 3, '气检': 1, '电检': 24, '拍照': 0, 'GP12': 1 }
       }
     };
 
     const stationLabels = ['装配', '气检', '电检', '拍照', 'GP12'];
 
     // ================================================================
-    // 2. 计算 10 月各产品不良数、良品数、良品率
+    // 2. 计算10月各产品不良数、良品数、良品率
     // ================================================================
-    const currentMonthKey = '10月';
-    const currentMonthIdx = months.indexOf(currentMonthKey);
-
-    const curData = stationDataByMonth[currentMonthKey];
-    const curBad = {};
-    const curGood = {};
-    let totalBad = 0;
-    let totalProd = 0;
+    const octData = stationDataByMonth['10月'];
+    const octBad = {};
+    const octGood = {};
+    let totalBadOct = 0;
+    let totalProdOct = 0;
 
     for (const p of prodNames) {
       let bad = 0;
-      for (const s of stationLabels) bad += curData[p][s];
-      curBad[p] = bad;
-      curGood[p] = monthlyProd[p][currentMonthIdx] - bad;
-      totalBad += bad;
-      totalProd += monthlyProd[p][currentMonthIdx];
+      for (const s of stationLabels) {
+        bad += octData[p][s];
+      }
+      octBad[p] = bad;
+      octGood[p] = monthlyProd[p][9] - bad;
+      totalBadOct += bad;
+      totalProdOct += monthlyProd[p][9];
     }
 
-    const curRTY = {};
+    const octRTY = {};
     for (const p of prodNames) {
-      curRTY[p] = curGood[p] / monthlyProd[p][currentMonthIdx];
+      octRTY[p] = octGood[p] / monthlyProd[p][9];
     }
 
-    const stationValues = stationLabels.map(s => {
+    const stationValuesOct = stationLabels.map(s => {
       let sum = 0;
-      for (const p of prodNames) sum += curData[p][s];
+      for (const p of prodNames) sum += octData[p][s];
       return sum;
     });
 
     // ================================================================
-    // 3. 月度平均良品率
+    // 3. 月度平均良品率 (1-10月)
     // ================================================================
     function avgRTY(monthIdx) {
       let sum = 0;
@@ -463,10 +499,10 @@
     // ================================================================
     // 4. KPI (10月)
     // ================================================================
-    const yieldCur = 1 - totalBad / totalProd;
-    document.getElementById('kpiBad').textContent = totalBad.toLocaleString();
-    document.getElementById('kpiOutput').textContent = totalProd.toLocaleString();
-    document.getElementById('kpiYield').textContent = (yieldCur * 100).toFixed(2) + '%';
+    const yield10 = 1 - totalBadOct / totalProdOct;
+    document.getElementById('kpiBad').textContent = totalBadOct.toLocaleString();
+    document.getElementById('kpiOutput').textContent = totalProdOct.toLocaleString();
+    document.getElementById('kpiYield').textContent = (yield10 * 100).toFixed(2) + '%';
 
     // ================================================================
     // 5. 时间
@@ -474,20 +510,25 @@
     function updateDateTime() {
       const now = new Date();
       document.getElementById('datetime').textContent = now.toLocaleString('zh-CN', {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
       });
     }
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
     // ================================================================
-    // 6. Chart.js 渲染
+    // 6. Chart.js 渲染 (明亮主题)
     // ================================================================
-    Chart.defaults.color = '#3a4d66';
-    Chart.defaults.borderColor = '#dde3ee';
+    Chart.defaults.color = '#2c3e5c';
+    Chart.defaults.borderColor = '#cbd7e8';
 
-    // 6.1 月度良品率趋势
+    // 6.1 月度良品率趋势 (1-10月)
     new Chart(document.getElementById('trendChart').getContext('2d'), {
       type: 'line',
       data: {
@@ -495,20 +536,21 @@
         datasets: [{
           label: '综合良品率',
           data: monthlyYield.map(v => +(v * 100).toFixed(2)),
-          borderColor: '#2563eb',
-          backgroundColor: 'rgba(37,99,235,0.08)',
+          borderColor: '#1d4ed8',
+          backgroundColor: 'rgba(29, 78, 216, 0.08)',
           fill: true,
-          tension: 0.25,
-          pointBackgroundColor: '#2563eb',
+          tension: 0.3,
+          pointBackgroundColor: '#1d4ed8',
           pointBorderColor: '#ffffff',
           pointBorderWidth: 2,
-          pointRadius: 4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
         }, {
           label: '目标 98%',
           data: months.map(() => 98),
-          borderColor: '#dc2626',
+          borderColor: '#e11d48',
           borderDash: [6, 4],
-          borderWidth: 2,
+          borderWidth: 2.5,
           pointRadius: 0,
           fill: false,
         }]
@@ -517,16 +559,27 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 12, font: { size: 10, weight: '500' } } }
+          legend: {
+            position: 'top',
+            labels: { usePointStyle: true, boxWidth: 8, padding: 12, font: { size: 11, weight: '500' } }
+          }
         },
         scales: {
-          y: { min: 85, max: 100, ticks: { callback: v => v + '%', color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } },
-          x: { ticks: { color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } }
+          y: {
+            min: 85,
+            max: 100,
+            ticks: { callback: v => v + '%', color: '#3a506e', font: { size: 11 } },
+            grid: { color: '#d9e2f0' }
+          },
+          x: {
+            ticks: { color: '#3a506e', font: { size: 11 } },
+            grid: { color: '#d9e2f0' }
+          }
         }
       }
     });
 
-    // 6.2 各产品月度良品率对比
+    // 6.2 各产品月度良品率对比 (1-10月)
     new Chart(document.getElementById('productTrendChart').getContext('2d'), {
       type: 'line',
       data: {
@@ -534,39 +587,51 @@
         datasets: prodNames.map((p, idx) => ({
           label: p,
           data: rtyData[p].map(v => +(v * 100).toFixed(2)),
-          borderColor: ['#dc2626', '#2563eb', '#059669'][idx % 3],
+          borderColor: ['#e11d48', '#2563eb', '#0e9f6e'][idx % 3],
           backgroundColor: 'transparent',
           tension: 0.2,
-          pointRadius: 3,
-          borderWidth: 2,
-          pointBackgroundColor: ['#dc2626', '#2563eb', '#059669'][idx % 3],
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2.5,
         }))
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 10, font: { size: 9, weight: '500' } } }
+          legend: {
+            position: 'top',
+            labels: { usePointStyle: true, boxWidth: 8, padding: 10, font: { size: 10 } }
+          }
         },
         scales: {
-          y: { min: 85, max: 100, ticks: { callback: v => v + '%', color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } },
-          x: { ticks: { color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } }
+          y: {
+            min: 85,
+            max: 100,
+            ticks: { callback: v => v + '%', color: '#3a506e', font: { size: 11 } },
+            grid: { color: '#d9e2f0' }
+          },
+          x: {
+            ticks: { color: '#3a506e', font: { size: 11 } },
+            grid: { color: '#d9e2f0' }
+          }
         }
       }
     });
 
-    // 6.3 10月各产品良品率
-    new Chart(document.getElementById('octoberProductChart').getContext('2d'), {
+    // 6.3 10月各产品良品率 (柱状图)
+    new Chart(document.getElementById('septemberProductChart').getContext('2d'), {
       type: 'bar',
       data: {
         labels: prodNames,
         datasets: [{
           label: '良品率 (%)',
-          data: prodNames.map(p => +(curRTY[p] * 100).toFixed(2)),
-          backgroundColor: ['#dc262622', '#2563eb22', '#05966922'],
-          borderColor: ['#dc2626', '#2563eb', '#059669'],
-          borderWidth: 2,
-          borderRadius: 6,
+          data: prodNames.map(p => +(octRTY[p] * 100).toFixed(2)),
+          backgroundColor: ['#e11d4833', '#2563eb33', '#0e9f6e33'],
+          borderColor: ['#e11d48', '#2563eb', '#0e9f6e'],
+          borderWidth: 2.5,
+          borderRadius: 8,
+          barPercentage: 0.6,
         }]
       },
       options: {
@@ -574,50 +639,68 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          y: { min: 85, max: 100, ticks: { callback: v => v + '%', color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } },
-          x: { ticks: { color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } }
+          y: {
+            min: 85,
+            max: 100,
+            ticks: { callback: v => v + '%', color: '#3a506e', font: { size: 11 } },
+            grid: { color: '#d9e2f0' }
+          },
+          x: {
+            ticks: { color: '#3a506e', font: { size: 12, weight: '600' } },
+            grid: { display: false }
+          }
         }
       }
     });
 
-    // 6.4 10月工序分布 (饼图)
+    // 6.4 10月工序分布 (饼图) —— 明亮配色
     new Chart(document.getElementById('stationChart').getContext('2d'), {
       type: 'doughnut',
       data: {
         labels: stationLabels,
         datasets: [{
-          data: stationValues,
-          backgroundColor: ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed'],
+          data: stationValuesOct,
+          backgroundColor: ['#3b82f6', '#22c55e', '#f97316', '#ef4444', '#a855f7'],
           borderWidth: 2,
-          borderColor: '#ffffff'
+          borderColor: '#ffffff',
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'right', labels: { boxWidth: 12, font: { size: 9, weight: '500' }, color: '#3a4d66' } }
-        }
+          legend: { 
+            position: 'right', 
+            labels: { 
+              boxWidth: 14, 
+              font: { size: 11, weight: '500' }, 
+              color: '#1e2b4a',
+              padding: 12
+            } 
+          }
+        },
+        cutout: '60%',
       }
     });
 
-    // 6.5 TOP失效模式
-    const stationSorted = stationLabels
-      .map((label, idx) => ({ label, value: stationValues[idx] }))
+    // 6.5 TOP失效模式 (10月横向柱状图)
+    const stationSortedOct = stationLabels
+      .map((label, idx) => ({ label, value: stationValuesOct[idx] }))
       .filter(d => d.value > 0)
       .sort((a, b) => b.value - a.value);
 
     new Chart(document.getElementById('defectChart').getContext('2d'), {
       type: 'bar',
       data: {
-        labels: stationSorted.map(d => d.label),
+        labels: stationSortedOct.map(d => d.label),
         datasets: [{
           label: '不良数量',
-          data: stationSorted.map(d => d.value),
-          backgroundColor: ['#d9770622', '#dc262622', '#2563eb22', '#05966922', '#7c3aed22'],
-          borderColor: ['#d97706', '#dc2626', '#2563eb', '#059669', '#7c3aed'],
-          borderWidth: 2,
+          data: stationSortedOct.map(d => d.value),
+          backgroundColor: ['#f9731644', '#ef444444', '#facc1544', '#3b82f644', '#a855f744'],
+          borderColor: ['#f97316', '#ef4444', '#facc15', '#3b82f6', '#a855f7'],
+          borderWidth: 2.5,
           borderRadius: 6,
+          barPercentage: 0.7,
         }]
       },
       options: {
@@ -626,17 +709,30 @@
         indexAxis: 'y',
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: function(context) { return '不良数: ' + context.parsed.x + ' 件'; } } }
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '不良数: ' + context.parsed.x + ' 件';
+              }
+            }
+          }
         },
         scales: {
-          x: { beginAtZero: true, ticks: { color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } },
-          y: { ticks: { color: '#5a6b82', font: { size: 10 } }, grid: { color: '#e8edf5' } }
+          x: {
+            beginAtZero: true,
+            ticks: { color: '#3a506e', font: { size: 11 } },
+            grid: { color: '#d9e2f0' }
+          },
+          y: {
+            ticks: { color: '#1e2b4a', font: { size: 12, weight: '600' } },
+            grid: { display: false }
+          }
         }
       }
     });
 
     // ================================================================
-    // 7. 右侧内容
+    // 7. 右侧内容: 月度明细(滚动) + AI建议(静态) — 1-10月
     // ================================================================
     const monthTrack = document.getElementById('monthTrack');
 
@@ -657,7 +753,7 @@
 
     const aiStatic = document.getElementById('aiStatic');
 
-    const suggestions = stationSorted.map(({ label, value }) => {
+    const suggestionsOct = stationSortedOct.map(({ label, value }) => {
       let advice = '';
       if (label === '电检') advice = `不良${value}件，建议优化测试治具及参数校准`;
       else if (label === '装配') advice = `不良${value}件，建议加强定位工装及操作培训`;
@@ -668,7 +764,7 @@
       return { label, advice };
     });
 
-    aiStatic.innerHTML = suggestions.map(s =>
+    aiStatic.innerHTML = suggestionsOct.map(s =>
       `<div class="ai-item"><strong>${s.label}</strong> ${s.advice}</div>`
     ).join('');
   </script>
